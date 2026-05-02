@@ -287,3 +287,63 @@ Not targeted by default:
 Implementation plan:
 
 - docs/superpowers/plans/2026-05-02-veilsettle-mvp.md
+
+## Development Pause State - 2026-05-02 18:03 +03:00
+
+Development was intentionally interrupted by the user after Task 2.
+
+Active development worktree:
+
+- Path: `C:\Users\miha2\Project\collesiumpr\.worktrees\veilsettle-mvp`
+- Branch: `feat/veilsettle-mvp`
+- Latest implementation commit before pause note: `b776aad fix: use eslint cli for web lint`
+
+Main/root workspace state:
+
+- Path: `C:\Users\miha2\Project\collesiumpr`
+- Branch: `master`
+- Latest commit: `f483c50 fix: clean baseline handoff`
+- Main branch has docs/baseline only. App implementation exists in the worktree branch, not in `master`.
+
+Completed implementation tasks:
+
+1. Task 1 - Lock Product Docs And Repo Baseline.
+   - Git repo initialized.
+   - `documentation.md` tracked so hackathon research is available in worktrees.
+   - `.gitignore`, root `package.json`, `pnpm-workspace.yaml`, `README.md`, plan file, and locked product docs committed.
+   - Review gates passed after fix commit `f483c50`.
+
+2. Task 2 - Scaffold Web App.
+   - Next.js app scaffolded under `apps/web`.
+   - App package name set to `@veilsettle/web`.
+   - Required Solana/Supabase/testing dependencies installed.
+   - Root `/` redirects to `/dashboard`.
+   - `next lint` issue fixed for Next 16 by changing web lint script to `eslint .`.
+   - Spec review passed after fix commit `b776aad`.
+   - Final code quality review for Task 2 was not run because development was paused immediately after spec review.
+
+Verification already done:
+
+- `corepack.cmd pnpm --filter @veilsettle/web dev` started the server.
+- `/` returned redirect to `/dashboard`.
+- `/dashboard` returned expected 404 because dashboard screen is planned for Task 7.
+- `corepack.cmd pnpm --filter @veilsettle/web build` passed.
+- `corepack.cmd pnpm --filter @veilsettle/web lint` passed after lint fix.
+- `corepack.cmd pnpm --filter @veilsettle/web exec tsc --noEmit --pretty false` passed in spec review.
+- Worktree was clean before this pause note.
+
+Known environment notes:
+
+- `pnpm` is not directly on PATH in this shell. Use `corepack.cmd pnpm ...`.
+- `corepack enable` failed with `EPERM`; do not rely on global pnpm being installed.
+- Dependency install needed `--ignore-scripts` because a transitive `@stellar/stellar-sdk` postinstall was Windows-incompatible.
+- Next/Turbopack may print a workspace-root warning because `.worktrees/veilsettle-mvp` is nested under the original repo path. Builds still passed.
+
+Next best step when resuming:
+
+1. Continue in `C:\Users\miha2\Project\collesiumpr\.worktrees\veilsettle-mvp`, not in the root `master` worktree.
+2. Run `git status --short --branch` and confirm branch is `feat/veilsettle-mvp`.
+3. Start with Task 3 from `docs/superpowers/plans/2026-05-02-veilsettle-mvp.md`: Add Domain Types And Commitment Hashing.
+4. Use `corepack.cmd pnpm` for all pnpm commands.
+5. Before Task 3, either run the missing Task 2 code quality review or treat Task 3's first checkpoint as including a quick scaffold quality check.
+6. Keep the subagent-driven workflow: implement Task 3, run spec review, run code quality review, fix issues, then mark Task 3 complete.
