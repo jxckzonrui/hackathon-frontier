@@ -2,14 +2,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const singleMock = vi.fn();
 const insertMock = vi.fn();
+const deleteEqMock = vi.fn();
+const deleteMock = vi.fn(() => ({ eq: deleteEqMock }));
 const eqMock = vi.fn(() => ({ single: singleMock }));
 const selectMock = vi.fn(() => ({ eq: eqMock }));
-const fromMock = vi.fn(() => ({ insert: insertMock, select: selectMock }));
+const fromMock = vi.fn(() => ({ delete: deleteMock, insert: insertMock, select: selectMock }));
+const getSupabaseServerClientMock = vi.fn(() => ({
+  from: fromMock,
+}));
 
 vi.mock("@/lib/veilsettle/storage", () => ({
-  getSupabaseServerClient: () => ({
-    from: fromMock,
-  }),
+  getSupabaseServerClient: getSupabaseServerClientMock,
 }));
 
 const invoiceDraft = {
@@ -28,6 +31,9 @@ const invoiceDraft = {
 describe("invoice API routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getSupabaseServerClientMock.mockImplementation(() => ({
+      from: fromMock,
+    }));
   });
 
   it("stores private invoice details only in the encrypted blob row", async () => {
@@ -76,6 +82,48 @@ describe("invoice API routes", () => {
     expect(blobInsert.encrypted_blob.ciphertext).not.toContain(invoiceDraft.amountMinor);
   });
 
+  it("deletes the invoice row when encrypted blob storage fails", async () => {
+    const { POST } = await import("./route");
+    insertMock
+      .mockReturnValueOnce({
+        select: () => ({
+          single: () => Promise.resolve({ data: { id: "invoice-1" }, error: null }),
+        }),
+      })
+      .mockResolvedValueOnce({ error: { message: "blob insert failed" } });
+    deleteEqMock.mockResolvedValueOnce({ error: null });
+
+    const response = await POST(
+      new Request("http://localhost/api/invoices", {
+        method: "POST",
+        body: JSON.stringify(invoiceDraft),
+      }),
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "Failed to store invoice blob" });
+    expect(fromMock).toHaveBeenNthCalledWith(3, "invoices");
+    expect(deleteMock).toHaveBeenCalledOnce();
+    expect(deleteEqMock).toHaveBeenCalledWith("id", "invoice-1");
+  });
+
+  it("returns controlled JSON when create route storage is not configured", async () => {
+    const { POST } = await import("./route");
+    getSupabaseServerClientMock.mockImplementationOnce(() => {
+      throw new Error("Missing Supabase environment variables");
+    });
+
+    const response = await POST(
+      new Request("http://localhost/api/invoices", {
+        method: "POST",
+        body: JSON.stringify(invoiceDraft),
+      }),
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "Server configuration error" });
+  });
+
   it("public invoice response excludes private and encrypted fields", async () => {
     const { GET } = await import("../public/invoices/[id]/route");
     singleMock.mockResolvedValueOnce({
@@ -109,6 +157,20 @@ describe("invoice API routes", () => {
       paid_at: null,
     });
     expect(JSON.stringify(payload)).not.toContain("Private memo");
+  });
+
+  it("returns controlled JSON when public route storage is not configured", async () => {
+    const { GET } = await import("../public/invoices/[id]/route");
+    getSupabaseServerClientMock.mockImplementationOnce(() => {
+      throw new Error("Missing Supabase environment variables");
+    });
+
+    const response = await GET(new Request("http://localhost"), {
+      params: Promise.resolve({ id: "invoice-1" }),
+    });
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "Server configuration error" });
   });
 
   it("authorized invoice route rejects missing and unauthorized wallets", async () => {
@@ -146,5 +208,59 @@ describe("invoice API routes", () => {
     );
 
     expect(unauthorizedResponse.status).toBe(403);
+  });
+
+  it("returns controlled JSON when authorized route storage is not configured", async () => {
+    const { GET } = await import("./[id]/route");
+    getSupabaseServerClientMock.mockImplementationOnce(() => {
+      throw new Error("Missing Supabase environment variables");
+    });
+
+    const response = await GET(
+      new Request("http://localhost", {
+        headers: { "x-veilsettle-wallet": invoiceDraft.creatorWallet },
+      }),
+      { params: Promise.resolve({ id: "invoice-1" }) },
+    );
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ error: "Server configuration error" });
+  });
+
+  it("returns encrypted blob for an authorized wallet", async () => {
+    const { GET } = await import("./[id]/route");
+    singleMock.mockResolvedValueOnce({
+      data: {
+        id: "invoice-1",
+        status: "created",
+        metadata_hash: "metadata-hash",
+        amount_commitment: "amount-commitment",
+        due_date_hash: "due-date-hash",
+        payment_proof_reference: null,
+        created_at: "2026-05-02T00:00:00.000Z",
+        paid_at: null,
+        encrypted_invoice_blobs: {
+          encrypted_blob: { schemaVersion: 1, ciphertext: "cipher", iv: "iv", recipients: [] },
+          authorized_wallets: [invoiceDraft.creatorWallet],
+          blob_hash: "blob-hash",
+        },
+      },
+      error: null,
+    });
+
+    const response = await GET(
+      new Request("http://localhost", {
+        headers: { "x-veilsettle-wallet": invoiceDraft.creatorWallet },
+      }),
+      { params: Promise.resolve({ id: "invoice-1" }) },
+    );
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      id: "invoice-1",
+      encrypted_blob: { schemaVersion: 1, ciphertext: "cipher", iv: "iv", recipients: [] },
+      authorized_wallets: [invoiceDraft.creatorWallet],
+      blob_hash: "blob-hash",
+    });
   });
 });

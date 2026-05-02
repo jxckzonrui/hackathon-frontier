@@ -41,43 +41,56 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid invoice payload" }, { status: 400 });
   }
 
+  let supabase: ReturnType<typeof getSupabaseServerClient>;
+
+  try {
+    supabase = getSupabaseServerClient();
+  } catch {
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+  }
+
   const body = parsed.data;
   const commitments = await createInvoiceCommitments(body);
   const authorizedWallets = [body.creatorWallet, body.clientWallet];
   const encryptedBlob = await encryptInvoiceBlob(body, authorizedWallets);
   const blobHash = await sha256Hex(JSON.stringify(encryptedBlob));
-  const supabase = getSupabaseServerClient();
 
-  const invoiceInsert = await supabase
-    .from("invoices")
-    .insert({
-      creator_wallet: body.creatorWallet,
-      payer_hash: commitments.payerHash,
-      metadata_hash: commitments.metadataHash,
-      amount_commitment: commitments.amountCommitment,
-      due_date_hash: commitments.dueDateHash,
-      status: "created",
-    })
-    .select("id")
-    .single();
+  try {
+    const invoiceInsert = await supabase
+      .from("invoices")
+      .insert({
+        creator_wallet: body.creatorWallet,
+        payer_hash: commitments.payerHash,
+        metadata_hash: commitments.metadataHash,
+        amount_commitment: commitments.amountCommitment,
+        due_date_hash: commitments.dueDateHash,
+        status: "created",
+      })
+      .select("id")
+      .single();
 
-  if (invoiceInsert.error || !invoiceInsert.data) {
-    return NextResponse.json({ error: "Failed to create invoice" }, { status: 500 });
+    if (invoiceInsert.error || !invoiceInsert.data) {
+      return NextResponse.json({ error: "Failed to create invoice" }, { status: 500 });
+    }
+
+    const blobInsert = await supabase.from("encrypted_invoice_blobs").insert({
+      invoice_id: invoiceInsert.data.id,
+      encrypted_blob: encryptedBlob,
+      authorized_wallets: authorizedWallets,
+      blob_hash: blobHash,
+    });
+
+    if (blobInsert.error) {
+      await supabase.from("invoices").delete().eq("id", invoiceInsert.data.id);
+
+      return NextResponse.json({ error: "Failed to store invoice blob" }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      invoiceId: invoiceInsert.data.id,
+      commitments,
+    });
+  } catch {
+    return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
-
-  const blobInsert = await supabase.from("encrypted_invoice_blobs").insert({
-    invoice_id: invoiceInsert.data.id,
-    encrypted_blob: encryptedBlob,
-    authorized_wallets: authorizedWallets,
-    blob_hash: blobHash,
-  });
-
-  if (blobInsert.error) {
-    return NextResponse.json({ error: "Failed to store invoice blob" }, { status: 500 });
-  }
-
-  return NextResponse.json({
-    invoiceId: invoiceInsert.data.id,
-    commitments,
-  });
 }
