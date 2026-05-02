@@ -90,7 +90,7 @@ All paths are relative to `C:\Users\miha2\Project\collesiumpr`.
 - Create: `pnpm-workspace.yaml`
 - Create: `README.md`
 
-- [ ] **Step 1: Initialize git repository**
+- [x] **Step 1: Initialize git repository**
 
 Run:
 
@@ -100,7 +100,7 @@ git init
 
 Expected: repository initialized in `C:\Users\miha2\Project\collesiumpr`.
 
-- [ ] **Step 2: Update `agent.md` with locked VeilSettle summary**
+- [x] **Step 2: Update `agent.md` with locked VeilSettle summary**
 
 Append this section to `agent.md`:
 
@@ -126,7 +126,7 @@ Primary target tracks: Main Frontier, 100xDevs, Adevar Labs, RPC Fast, Tether QV
 Implementation plan: docs/superpowers/plans/2026-05-02-veilsettle-mvp.md
 ```
 
-- [ ] **Step 3: Create `.gitignore`**
+- [x] **Step 3: Create `.gitignore`**
 
 Create:
 
@@ -146,7 +146,7 @@ wallets
 *.log
 ```
 
-- [ ] **Step 4: Create workspace package files**
+- [x] **Step 4: Create workspace package files**
 
 Create `package.json`:
 
@@ -172,7 +172,7 @@ packages:
   - "apps/*"
 ```
 
-- [ ] **Step 5: Create README**
+- [x] **Step 5: Create README**
 
 Create `README.md`:
 
@@ -190,7 +190,7 @@ Agency creates an encrypted protocol-audit invoice, client reviews local QVAC ch
 Main Frontier, 100xDevs, Adevar Labs, RPC Fast, Tether QVAC, Palm USD, Cloak, Dune SIM, GoldRush, SNS, Torque, theMiracle.
 ```
 
-- [ ] **Step 6: Commit baseline**
+- [x] **Step 6: Commit baseline**
 
 Run:
 
@@ -245,10 +245,11 @@ export default function Home() {
 
 - [ ] **Step 4: Add test scripts**
 
-Update `apps/web/package.json` scripts:
+Set `apps/web/package.json` name to `@veilsettle/web` and update scripts:
 
 ```json
 {
+  "name": "@veilsettle/web",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
