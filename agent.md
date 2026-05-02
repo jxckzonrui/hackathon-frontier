@@ -347,3 +347,49 @@ Next best step when resuming:
 4. Use `corepack.cmd pnpm` for all pnpm commands.
 5. Before Task 3, either run the missing Task 2 code quality review or treat Task 3's first checkpoint as including a quick scaffold quality check.
 6. Keep the subagent-driven workflow: implement Task 3, run spec review, run code quality review, fix issues, then mark Task 3 complete.
+
+## Development Resume State - 2026-05-02
+
+Completed after resume:
+
+- Task 2 code quality cleanup: tracked `apps/web/next-env.d.ts` and fixed scaffold README path.
+- Task 3 - Domain Types And Commitment Hashing.
+  - Added VeilSettle invoice domain types.
+  - Added deterministic commitment hashing.
+  - Fixed primitive commitment hashing to hash raw strings.
+  - Spec and code quality review passed.
+- Task 4 - Encryption And Selective Reveal Bundles.
+  - Added AES-GCM demo-session invoice encryption.
+  - Added selective reveal bundles.
+  - Fixed `lineItems` reveal to expose labels only, not nested amounts.
+  - Spec and code quality review passed.
+- Task 5 - Supabase Schema And Invoice APIs.
+  - Added Supabase schema with RLS enabled.
+  - Added server-side Supabase storage boundary.
+  - Added create invoice API, authorized encrypted invoice API, and public verification API.
+  - Fixed blob-insert failure cleanup and controlled JSON handling for missing server config.
+  - Spec and code quality review passed.
+
+Latest implementation commit before toolchain install work:
+
+- `450b575 fix: harden invoice API failure handling`
+
+Task 6 toolchain install status:
+
+- Official Windows path requires WSL first, then the Solana/Anchor install command inside Ubuntu.
+- Installed official Microsoft WSL package through `winget install --id Microsoft.WSL --source winget`.
+- Ran `wsl --install --no-distribution`; Windows reported success but requires system restart.
+- Installed official Ubuntu 24.04 package through `winget install --id Canonical.Ubuntu.2404 --source winget`.
+- WSL/Ubuntu cannot launch yet in this session. `ubuntu2404.exe` fails with `WslRegisterDistribution failed with error: 0x80370114`, consistent with pending Windows feature activation/restart.
+
+Next step after reboot:
+
+1. Open this workspace again.
+2. Verify WSL with `wsl --status` and `wsl --list --verbose`.
+3. Launch Ubuntu 24.04 and create the Linux user if prompted.
+4. In Ubuntu, run the official Solana/Anchor installer:
+   `curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash`
+5. Restart the Ubuntu terminal or source the generated shell env.
+6. Verify:
+   `rustc --version && solana --version && anchor --version`
+7. Continue Task 6 from `docs/superpowers/plans/2026-05-02-veilsettle-mvp.md`.
