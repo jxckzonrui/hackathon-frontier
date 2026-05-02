@@ -1,4 +1,4 @@
-import type { InvoiceDraft } from "./types";
+import type { InvoiceDraft, InvoiceLineItem } from "./types";
 
 export type EncryptedInvoiceBlob = {
   schemaVersion: 1;
@@ -12,8 +12,14 @@ export type RevealableField = keyof Pick<
   "serviceTitle" | "currency" | "dueDate" | "lineItems" | "memo" | "attachmentHash" | "clientDisplay"
 >;
 
+export type RevealedInvoiceFields = Partial<
+  Omit<Pick<InvoiceDraft, RevealableField>, "lineItems"> & {
+    lineItems: Pick<InvoiceLineItem, "label">[];
+  }
+>;
+
 export type ReceiptRevealBundle = {
-  revealed: Partial<Pick<InvoiceDraft, RevealableField>>;
+  revealed: RevealedInvoiceFields;
   revealScope: RevealableField[];
   createdAt: string;
 };
@@ -47,7 +53,7 @@ export async function encryptInvoiceBlob(
     schemaVersion: 1,
     ciphertext: toBase64(new Uint8Array(ciphertext)),
     iv: toBase64(iv),
-    recipients,
+    recipients: [...recipients],
   };
 }
 
@@ -70,11 +76,15 @@ export async function createRevealBundle(
 ): Promise<ReceiptRevealBundle> {
   const revealed: ReceiptRevealBundle["revealed"] = {};
   for (const field of fields) {
-    revealed[field] = draft[field] as never;
+    if (field === "lineItems") {
+      revealed.lineItems = draft.lineItems.map(({ label }) => ({ label }));
+    } else {
+      revealed[field] = draft[field] as never;
+    }
   }
   return {
     revealed,
-    revealScope: fields,
+    revealScope: [...fields],
     createdAt: new Date("2026-05-02T00:00:00.000Z").toISOString(),
   };
 }

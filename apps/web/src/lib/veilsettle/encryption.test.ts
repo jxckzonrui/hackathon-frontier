@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createRevealBundle, decryptInvoiceBlob, encryptInvoiceBlob } from "./encryption";
+import type { RevealableField } from "./encryption";
 import type { InvoiceDraft } from "./types";
 
 const draft: InvoiceDraft = {
@@ -29,5 +30,30 @@ describe("invoice encryption", () => {
       currency: "PUSD",
     });
     expect(reveal.revealed).not.toHaveProperty("amountMinor");
+  });
+
+  it("reveals line items as labels only", async () => {
+    const reveal = await createRevealBundle(draft, ["lineItems"]);
+
+    expect(reveal.revealed.lineItems).toEqual([{ label: "Audit" }]);
+    expect(reveal.revealed.lineItems?.[0]).not.toHaveProperty("amountMinor");
+  });
+
+  it("copies reveal scope so caller mutations do not change the bundle", async () => {
+    const mutableFields: RevealableField[] = ["serviceTitle"];
+    const reveal = await createRevealBundle(draft, mutableFields);
+
+    mutableFields.push("currency");
+
+    expect(reveal.revealScope).toEqual(["serviceTitle"]);
+  });
+
+  it("copies recipients so caller mutations do not change encrypted metadata", async () => {
+    const recipients = ["agency-wallet", "client-wallet"];
+    const encrypted = await encryptInvoiceBlob(draft, recipients);
+
+    recipients.push("auditor-wallet");
+
+    expect(encrypted.recipients).toEqual(["agency-wallet", "client-wallet"]);
   });
 });
