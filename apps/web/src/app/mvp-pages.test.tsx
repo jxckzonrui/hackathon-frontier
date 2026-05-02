@@ -1,7 +1,12 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 describe("VeilSettle MVP pages", () => {
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
   it("renders the agency dashboard with privacy and settlement entry points", async () => {
     const DashboardPage = (await import("./dashboard/page")).default;
 
@@ -40,6 +45,26 @@ describe("VeilSettle MVP pages", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       }),
+    );
+  });
+
+  it("falls back to the local demo invoice when persistence is not configured", async () => {
+    const { InvoiceForm } = await import("@/components/InvoiceForm");
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ error: "Server configuration error" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<InvoiceForm />);
+    fireEvent.click(screen.getByRole("button", { name: /create encrypted invoice/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/demo invoice demo-invoice ready locally/i)).toBeVisible();
+    });
+    expect(screen.getByRole("link", { name: /review client flow/i })).toHaveAttribute(
+      "href",
+      "/pay/demo-invoice",
     );
   });
 

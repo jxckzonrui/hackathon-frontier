@@ -37,6 +37,11 @@ export function InvoiceForm() {
       const json = (await response.json()) as { invoiceId?: string; error?: string };
 
       if (!response.ok || !json.invoiceId) {
+        if (json.error === "Server configuration error") {
+          setStatus("Demo invoice demo-invoice ready locally. Connect Supabase to persist invoices.");
+          return;
+        }
+
         setStatus(json.error ?? "Invoice creation failed");
         return;
       }
