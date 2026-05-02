@@ -25,10 +25,10 @@ function canonicalJson(value: CanonicalValue): string {
   return JSON.stringify(value);
 }
 
-async function sha256Hex(value: CanonicalValue): Promise<string> {
+async function sha256Hex(value: string): Promise<string> {
   const digest = await crypto.subtle.digest(
     "SHA-256",
-    textEncoder.encode(canonicalJson(value)),
+    textEncoder.encode(value),
   );
 
   return Array.from(new Uint8Array(digest), (byte) =>
@@ -49,7 +49,7 @@ export async function createInvoiceCommitments(
 
   const [metadataHash, amountCommitment, dueDateHash, payerHash] =
     await Promise.all([
-      sha256Hex(metadata),
+      sha256Hex(canonicalJson(metadata)),
       sha256Hex(`${draft.currency}:${draft.amountMinor}`),
       sha256Hex(draft.dueDate),
       sha256Hex(draft.clientWallet),
