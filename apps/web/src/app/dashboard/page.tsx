@@ -1,5 +1,6 @@
 import { BarChart3, FilePlus2, ShieldCheck, WalletCards } from "lucide-react";
 import Link from "next/link";
+import { getIntegrationProviderStatuses } from "@/lib/veilsettle/integrations/status";
 
 const metrics = [
   { label: "Created", value: "1", icon: FilePlus2 },
@@ -8,6 +9,8 @@ const metrics = [
 ];
 
 export default function DashboardPage() {
+  const providerStatuses = getIntegrationProviderStatuses();
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-8">
@@ -81,6 +84,23 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="border border-slate-200 bg-white">
+          <div className="border-b border-slate-200 px-5 py-4">
+            <h2 className="text-lg font-semibold text-slate-950">Integration status</h2>
+          </div>
+          <div className="grid divide-y divide-slate-100 md:grid-cols-5 md:divide-x md:divide-y-0">
+            {providerStatuses.map((provider) => (
+              <article className="p-4" key={provider.id}>
+                <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">
+                  {provider.category}
+                </p>
+                <h3 className="mt-2 text-sm font-semibold text-slate-950">{provider.label}</h3>
+                <p className="mt-2 text-xs text-slate-600">{provider.state}</p>
+              </article>
+            ))}
           </div>
         </section>
       </div>
