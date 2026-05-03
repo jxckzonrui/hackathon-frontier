@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -37,6 +38,12 @@ describe("Supabase storage boundary", () => {
   it("rejects missing server environment before creating a client", () => {
     expect(() => getSupabaseServerClient()).toThrow("Missing Supabase environment variables");
     expect(createClient).not.toHaveBeenCalled();
+  });
+
+  it("marks the service-role storage module as server-only", () => {
+    const source = readFileSync("src/lib/veilsettle/storage.ts", "utf8");
+
+    expect(source.startsWith('import "server-only";')).toBe(true);
   });
 
   it("creates an invoice row and returns the generated id", async () => {
