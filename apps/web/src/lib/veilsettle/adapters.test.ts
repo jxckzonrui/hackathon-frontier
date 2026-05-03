@@ -93,6 +93,31 @@ describe("sponsor integration adapters", () => {
     ).resolves.toEqual({ queued: false });
   });
 
+  it("posts Torque events when the sponsor token env var is configured", async () => {
+    vi.stubEnv("TORQUE_API_TOKEN", "torque-token");
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+    const { emitEarlyPaymentEvent } = await import("./torque");
+
+    await expect(
+      emitEarlyPaymentEvent({
+        eventName: "invoice_paid_early",
+        invoiceId: "invoice-1",
+        paidAt: "2026-05-07T12:00:00.000Z",
+        dueDate: "2026-05-08",
+      }),
+    ).resolves.toEqual({ queued: true });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.torque.so/events",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer torque-token",
+        }),
+      }),
+    );
+  });
+
   it("formats SNS names and wallet fallbacks", async () => {
     const { displayIdentity, isSnsName } = await import("./sns");
 

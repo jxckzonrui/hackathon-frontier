@@ -1,4 +1,4 @@
-import { emitEarlyPaymentEvent, type TorqueEventPayload } from "../../torque";
+import { emitEarlyPaymentEvent, getTorqueApiToken, type TorqueEventPayload } from "../../torque";
 import type { IntegrationProviderStatus } from "../status";
 
 export type GrowthEventProvider = {
@@ -13,7 +13,7 @@ export const torqueGrowthProvider: GrowthEventProvider = {
       category: "growth",
       id: "torque-early-payment",
       label: "Torque early-payment event",
-      state: process.env.TORQUE_API_KEY || process.env.TORQUE_API_TOKEN ? "configured" : "fallback",
+      state: getTorqueApiToken() ? "configured" : "fallback",
       publicSafe: true,
       detail: "Queues early-payment events without exposing private invoice details.",
     };

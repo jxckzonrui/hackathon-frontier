@@ -5,6 +5,10 @@ export type TorqueEventPayload = {
   dueDate: string;
 };
 
+export function getTorqueApiToken(): string | undefined {
+  return process.env.TORQUE_API_TOKEN || process.env.TORQUE_API_KEY;
+}
+
 export async function emitEarlyPaymentEvent(
   payload: TorqueEventPayload,
 ): Promise<{ queued: boolean }> {
@@ -12,14 +16,16 @@ export async function emitEarlyPaymentEvent(
     return { queued: false };
   }
 
-  if (!process.env.TORQUE_API_KEY) {
+  const apiToken = getTorqueApiToken();
+
+  if (!apiToken) {
     return { queued: true };
   }
 
   await fetch("https://api.torque.so/events", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.TORQUE_API_KEY}`,
+      Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
