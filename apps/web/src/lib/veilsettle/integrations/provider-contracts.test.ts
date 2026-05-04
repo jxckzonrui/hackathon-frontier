@@ -185,4 +185,19 @@ describe("integration provider contracts", () => {
       expect.objectContaining({ category: "growth" }),
     ]);
   });
+
+  it("reports Dune SIM status through the selected settlement data provider", () => {
+    vi.stubEnv("DUNE_SIM_API_KEY", "test-dune-key");
+    vi.stubEnv("DUNE_SIM_WALLET_ADDRESS", "Wallet1111111111111111111111111111111111111");
+
+    const statuses = getIntegrationProviderStatuses();
+
+    expect(statuses).toContainEqual(
+      expect.objectContaining({
+        category: "data",
+        id: "dune-sim-settlement-analytics",
+        state: "configured",
+      }),
+    );
+  });
 });

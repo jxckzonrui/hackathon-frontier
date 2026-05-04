@@ -50,3 +50,9 @@ GitHub URL:
 - Provider/API contract exists for opt-in `.sol` identity.
 - Live SNS resolver is fallback-only until a safe resolver dependency or API path is configured.
 - Removed the vulnerable `@bonfida/spl-name-service` dependency to keep the public repo free of critical/high audit findings.
+
+## Provider Status Evidence
+
+- Integration status aggregation now uses `getSettlementDataProvider().status()` for data integrations.
+- With `DUNE_SIM_API_KEY` and `DUNE_SIM_WALLET_ADDRESS` configured, the dashboard status reports `dune-sim-settlement-analytics` as `configured`.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- provider-contracts`: passed, 1 test file and 6 tests.
