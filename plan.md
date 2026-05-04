@@ -220,14 +220,14 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Modify: `apps/web/src/app/dashboard/*`
 - Test: `apps/web/src/lib/veilsettle/integrations/ai/qvac.test.ts`
 
-- [ ] Write failing tests for local review result shape: risk score, duplicate signal, vendor consistency, suspicious terms, and privacy note.
-- [ ] Verify tests fail for missing QVAC-backed review.
-- [ ] Integrate QVAC SDK or local QVAC runtime behind the AI provider.
-- [ ] Keep a clearly labeled deterministic fallback for machines without QVAC runtime.
-- [ ] Ensure no private invoice content is sent to cloud APIs.
-- [ ] Show review results in the invoice approval flow.
-- [ ] Run tests and build.
-- [ ] Commit with `feat: add qvac local invoice review`.
+- [x] Write failing tests for local review result shape: risk score, duplicate signal, vendor consistency, suspicious terms, and privacy note.
+- [x] Verify tests fail for missing QVAC-backed review.
+- [x] Integrate QVAC SDK or local QVAC runtime behind the AI provider.
+- [x] Keep a clearly labeled deterministic fallback for machines without QVAC runtime.
+- [x] Ensure no private invoice content is sent to cloud APIs.
+- [x] Show review results in the invoice approval flow.
+- [x] Run tests and build.
+- [x] Commit with `feat: add qvac local invoice review`.
 
 ### Task 7: PUSD Settlement Support
 

@@ -1,11 +1,22 @@
 import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { PaymentSettlementActions } from "@/components/PaymentSettlementActions";
+import { localInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
+import type { InvoiceDraft } from "@/lib/veilsettle/types";
 
-const checks = [
-  "No duplicate metadata hash",
-  "Due date is inside client approval window",
-  "SNS label client.sol matches expected wallet pattern",
-];
+const demoReviewDraft: InvoiceDraft = {
+  clientDisplay: "client.sol",
+  clientWallet: "Client111111111111111111111111111111111111",
+  amountMinor: "2500000000",
+  currency: "PUSD",
+  dueDate: "2026-05-08",
+  serviceTitle: "Protocol audit sprint",
+  lineItems: [
+    { label: "Smart contract review", amountMinor: "1500000000" },
+    { label: "Findings report", amountMinor: "1000000000" },
+  ],
+  memo: "Private audit invoice for sprint 12",
+  attachmentHash: "sha256-demo-attachment",
+};
 
 type PayInvoicePageProps = {
   params: Promise<{ id: string }>;
@@ -13,6 +24,10 @@ type PayInvoicePageProps = {
 
 export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
   const { id } = await params;
+  const review = await localInvoiceReviewProvider.reviewInvoice({
+    draft: demoReviewDraft,
+    knownAttachmentHashes: [],
+  });
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
@@ -34,15 +49,21 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
           </div>
 
           <div className="mt-6 border-t border-slate-100 pt-5">
-            <p className="text-sm font-semibold text-slate-900">QVAC local checks</p>
+            <div className="flex items-center justify-between gap-4">
+              <p className="text-sm font-semibold text-slate-900">QVAC local checks</p>
+              <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
+                Risk {review.riskScore}
+              </span>
+            </div>
             <ul className="mt-3 grid gap-3">
-              {checks.map((check) => (
-                <li className="flex items-center gap-2 text-sm text-slate-700" key={check}>
+              {review.checks.map((check) => (
+                <li className="flex items-center gap-2 text-sm text-slate-700" key={check.label}>
                   <ShieldCheck aria-hidden="true" className="size-4 text-emerald-700" />
-                  {check}
+                  {check.detail}
                 </li>
               ))}
             </ul>
+            <p className="mt-3 text-xs text-slate-500">{review.privacyNote}</p>
           </div>
 
           <PaymentSettlementActions invoiceId={id} />

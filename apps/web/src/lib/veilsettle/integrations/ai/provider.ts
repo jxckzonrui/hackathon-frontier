@@ -1,4 +1,9 @@
-import { runLocalInvoiceChecks, type QvacInvoiceCheck } from "../../qvac";
+import {
+  runLocalInvoiceReview,
+  type QvacInvoiceCheck,
+  type QvacReviewSignal,
+  type QvacVendorConsistencySignal,
+} from "../../qvac";
 import type { InvoiceDraft } from "../../types";
 import type { IntegrationProviderStatus } from "../status";
 
@@ -11,6 +16,9 @@ export type InvoiceReviewResult = {
   provider: "qvac-local-fallback";
   checks: QvacInvoiceCheck[];
   riskScore: number;
+  duplicateSignal: QvacReviewSignal;
+  vendorConsistency: QvacVendorConsistencySignal;
+  suspiciousTerms: QvacReviewSignal;
   privacyNote: string;
 };
 
@@ -21,14 +29,11 @@ export type InvoiceReviewProvider = {
 
 export const localInvoiceReviewProvider: InvoiceReviewProvider = {
   async reviewInvoice(request) {
-    const checks = await runLocalInvoiceChecks(request.draft, request.knownAttachmentHashes);
-    const warningCount = checks.filter((check) => check.severity === "warning").length;
+    const review = await runLocalInvoiceReview(request.draft, request.knownAttachmentHashes);
 
     return {
       provider: "qvac-local-fallback",
-      checks,
-      riskScore: Math.min(100, warningCount * 35),
-      privacyNote: "Local deterministic fallback; private invoice details are not sent to cloud APIs.",
+      ...review,
     };
   },
   status() {
