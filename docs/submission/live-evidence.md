@@ -62,6 +62,7 @@ GitHub URL:
 
 - Added `/api/privacy/payment` as the server route for private payment preparation through the configured provider.
 - `PaymentSettlementActions` calls the private payment route before storing a payment proof reference.
+- Payment proof references are restricted to known provider prefixes: `magicblock:`, `cloak:`, `umbra:`, `mock:`.
 - Demo mode still works without live Supabase; non-demo invoices store the provider proof reference through `/api/invoices/[id]/payment-proof`.
 - `corepack.cmd pnpm --filter @veilsettle/web test -- privacy payment-proof`: passed, 2 test files and 6 tests.
 - `corepack.cmd pnpm --filter @veilsettle/web test:e2e`: passed, 2 Playwright tests.

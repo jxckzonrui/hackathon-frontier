@@ -4,6 +4,25 @@ VeilSettle stores invoice details encrypted offchain and stores only commitments
 
 Submission eligibility and team registration are verified outside the public repository. This file intentionally does not include private team-member data.
 
+## Release Security Posture
+
+VeilSettle is a hackathon MVP, not a production payment processor.
+
+Strong properties in this release:
+
+- Public verification exposes status and commitments, not invoice amount, memo, line items, attachments, or client context.
+- Supabase service role access is server-side only.
+- RLS is enabled on invoice tables, with no browser-side direct table writes.
+- Payment provider adapters return public-safe proof references.
+- Payment proof references must use a known provider prefix: `magicblock:`, `cloak:`, `umbra:`, or `mock:`.
+
+Known MVP limitations:
+
+- Wallet authentication is demo-grade and does not yet require signed wallet challenges for every invoice read.
+- Payment proof submission stores provider proof references but does not independently verify every onchain execution path.
+- Invoice encryption key recovery is demo-grade and not suitable for production account recovery.
+- MagicBlock signing/submission is claimed only if Task 6 succeeds.
+
 MVP risks:
 
 - Demo key handling is session-scoped and must be replaced with wallet-encrypted per-recipient keys before production.

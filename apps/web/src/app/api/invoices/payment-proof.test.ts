@@ -16,7 +16,7 @@ vi.mock("@/lib/veilsettle/torque", () => ({
 }));
 
 const validPayload = {
-  paymentProofReference: "cloak-proof-demo",
+  paymentProofReference: "cloak:proof-demo",
   transactionSignature: "cloak-demo-signature",
   paidAt: "2026-05-07T12:00:00.000Z",
   dueDate: "2026-05-08",
@@ -46,7 +46,7 @@ describe("payment proof API route", () => {
     expect(fromMock).toHaveBeenCalledWith("invoices");
     expect(updateMock).toHaveBeenCalledWith({
       status: "paid",
-      payment_proof_reference: "cloak-proof-demo",
+      payment_proof_reference: "cloak:proof-demo",
       paid_at: "2026-05-07T12:00:00.000Z",
     });
     expect(eqIdMock).toHaveBeenCalledWith("id", "invoice-1");
@@ -115,5 +115,25 @@ describe("payment proof API route", () => {
       payment_proof_reference: "magicblock:invoice-1",
       paid_at: "2026-05-07T12:00:00.000Z",
     });
+  });
+
+  it("rejects unsupported payment proof references", async () => {
+    const { POST } = await import("./[id]/payment-proof/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/invoices/invoice-1/payment-proof", {
+        method: "POST",
+        body: JSON.stringify({
+          paymentProofReference: "raw-user-string",
+          transactionSignature: "signature",
+          paidAt: "2026-05-07T12:00:00.000Z",
+          dueDate: "2026-05-08",
+        }),
+      }),
+      { params: Promise.resolve({ id: "invoice-1" }) },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "Unsupported payment proof provider" });
   });
 });

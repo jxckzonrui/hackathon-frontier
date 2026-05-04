@@ -14,6 +14,8 @@ const paymentProofSchema = z.object({
   dueDate: z.string().min(10),
 });
 
+const allowedProofPrefixes = ["magicblock:", "cloak:", "umbra:", "mock:"];
+
 export async function POST(request: Request, context: RouteContext) {
   const parsed = paymentProofSchema.safeParse(await request.json().catch(() => null));
 
@@ -23,6 +25,10 @@ export async function POST(request: Request, context: RouteContext) {
 
   const { id } = await context.params;
   const body = parsed.data;
+
+  if (!allowedProofPrefixes.some((prefix) => body.paymentProofReference.startsWith(prefix))) {
+    return NextResponse.json({ error: "Unsupported payment proof provider" }, { status: 400 });
+  }
 
   try {
     const supabase = getSupabaseServerClient();

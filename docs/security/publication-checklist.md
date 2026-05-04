@@ -15,3 +15,8 @@ Before pushing or making the repository public:
 5. Treat `agent.md`, `documentation.md`, `.worktrees`, and `docs/superpowers` as local planning materials, not public release artifacts.
 6. If any real secret was ever committed, rotate it first and publish from a clean history branch instead of pushing the existing history.
 7. Confirm submission docs do not claim live Supabase, finalized PUSD metadata, or MagicBlock signing/submission until those blockers are closed.
+8. Confirm `pnpm audit` has no critical/high advisories, or every remaining advisory is documented.
+9. Confirm README limitations match the implemented payment path.
+10. Confirm public verification was checked for amount, memo, line item, attachment, and client leakage.
+11. Confirm Supabase service role key is only in server/deployment secrets.
+12. Confirm payment proof references are provider-prefixed.
