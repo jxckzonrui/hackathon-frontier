@@ -14,3 +14,4 @@ Before pushing or making the repository public:
 
 5. Treat `agent.md`, `documentation.md`, `.worktrees`, and `docs/superpowers` as local planning materials, not public release artifacts.
 6. If any real secret was ever committed, rotate it first and publish from a clean history branch instead of pushing the existing history.
+7. Confirm submission docs do not claim live Supabase, finalized PUSD metadata, or MagicBlock signing/submission until those blockers are closed.

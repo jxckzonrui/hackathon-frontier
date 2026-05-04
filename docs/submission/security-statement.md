@@ -5,6 +5,9 @@ VeilSettle stores invoice details encrypted offchain and stores only commitments
 MVP risks:
 
 - Demo key handling is session-scoped and must be replaced with wallet-encrypted per-recipient keys before production.
-- PUSD may use a devnet mock asset if official devnet access is unavailable.
-- Cloak integration must be verified against current SDK behavior before mainnet use.
+- Palm USD support must not hardcode PUSD metadata until an official Solana SPL mint/liquidity source is confirmed by sponsor or official docs.
+- MagicBlock Private Payments currently builds unsigned private SPL transfer transactions; wallet signing/submission is tracked as a separate risky mini-task.
+- Supabase live migration and schema verification are blocked until the user reauthenticates Supabase MCP and approves applying the migration.
 - Supabase service-role keys must never be exposed to the browser.
+- Dune SIM analytics returns hashed settlement identifiers only and must not expose raw invoice IDs, private memo, amount, line items, or client context.
+- SNS identity is opt-in; merchant/client `.sol` names should not be displayed where the user has not opted in.

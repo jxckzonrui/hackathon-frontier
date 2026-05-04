@@ -300,13 +300,13 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Modify: `docs/submission/hackathon-targets.md`
 - Modify: `docs/security/publication-checklist.md`
 
-- [ ] Update README with product overview, architecture, setup, env variables, demo flow, track mapping, and limitations.
-- [ ] Update demo script for a 3 to 5 minute recording.
-- [ ] Update security statement with threat model, privacy model, known MVP risks, and audit readiness.
-- [ ] Update hackathon target mapping to match actual completed integrations.
-- [ ] Run secret scan and docs placeholder scan.
-- [ ] Run full build/test suite.
-- [ ] Commit with `docs: prepare frontier submission package`.
+- [x] Update README with product overview, architecture, setup, env variables, demo flow, track mapping, and limitations.
+- [x] Update demo script for a 3 to 5 minute recording.
+- [x] Update security statement with threat model, privacy model, known MVP risks, and audit readiness.
+- [x] Update hackathon target mapping to match actual completed integrations.
+- [x] Run secret scan and docs placeholder scan.
+- [x] Run full build/test suite.
+- [x] Commit with `docs: prepare frontier submission package`.
 
 ## Optional Plan After Core Demo
 
