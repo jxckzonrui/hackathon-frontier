@@ -104,3 +104,12 @@ GitHub URL: not yet published in repo
 - No RPC Fast endpoint was configured or verified in this session.
 - Release claim: RPC Fast remains evidence-dependent, not a completed integration.
 - `SOLANA_RPC_URL` remains the server-side env hook for future Solana/SNS/RPC verification.
+
+## Solana Program Evidence
+
+- `anchor --version`: failed, `anchor` command is not installed in this PowerShell environment.
+- `cargo --version`: failed, `cargo` command is not installed in this PowerShell environment.
+- `solana --version`: failed, `solana` command is not installed in this PowerShell environment.
+- `corepack.cmd pnpm anchor:test`: not run in Task 11 because Anchor CLI is unavailable.
+- `cargo test`: not run in Task 11 because Cargo is unavailable.
+- Release claim: Anchor program source is included, but fresh local program test execution is not claimed from this environment.
