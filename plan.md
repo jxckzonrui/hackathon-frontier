@@ -262,13 +262,13 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Modify: `apps/web/src/app/dashboard/*`
 - Test: `apps/web/src/lib/veilsettle/integrations/data/dune.test.ts`
 
-- [ ] Write failing tests for Dune SIM request construction, redaction, and no-key behavior.
-- [ ] Verify tests fail for missing Dune adapter behavior.
-- [ ] Implement server-side Dune SIM adapter using `DUNE_SIM_API_KEY`.
-- [ ] Return aggregate settlement data with hashed invoice IDs only.
-- [ ] Add dashboard analytics panel backed by the server route.
-- [ ] Run tests and build.
-- [ ] Commit with `feat: add dune settlement analytics`.
+- [x] Write failing tests for Dune SIM request construction, redaction, and no-key behavior.
+- [x] Verify tests fail for missing Dune adapter behavior.
+- [x] Implement server-side Dune SIM adapter using `DUNE_SIM_API_KEY`.
+- [x] Return aggregate settlement data with hashed invoice IDs only.
+- [x] Add dashboard analytics panel backed by the server route.
+- [x] Run tests and build.
+- [x] Commit with `feat: add dune settlement analytics`.
 
 ### Task 9: SNS Identity
 

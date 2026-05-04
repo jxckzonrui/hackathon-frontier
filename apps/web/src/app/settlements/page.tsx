@@ -1,21 +1,16 @@
 import { Activity, Database, ReceiptText } from "lucide-react";
+import { getSettlementDataProvider } from "@/lib/veilsettle/integrations/data/provider";
 
-const rows = [
-  {
-    invoice: "demo-invoice",
-    status: "paid",
-    source: "Dune SIM",
-    proof: "cloak-proof-demo",
-  },
-  {
-    invoice: "audit-sprint-12",
-    status: "created",
-    source: "GoldRush",
-    proof: "pending",
-  },
-];
+export default async function SettlementsPage() {
+  const analytics = await getSettlementDataProvider().fetchSettlementAnalytics();
+  const sourceLabel = analytics.source === "dune-sim" ? "Dune SIM" : "Static fallback";
+  const rows = analytics.events.map((event) => ({
+    invoice: event.invoiceHash,
+    status: event.status,
+    source: sourceLabel,
+    proof: event.paymentProofReference ?? "pending",
+  }));
 
-export default function SettlementsPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-8">
@@ -28,12 +23,12 @@ export default function SettlementsPage() {
           <article className="border border-slate-200 bg-white p-4">
             <Database aria-hidden="true" className="size-5 text-slate-600" />
             <p className="mt-3 text-sm text-slate-500">Dune SIM events</p>
-            <p className="mt-1 text-2xl font-semibold">1</p>
+            <p className="mt-1 text-2xl font-semibold">{analytics.events.length}</p>
           </article>
           <article className="border border-slate-200 bg-white p-4">
             <ReceiptText aria-hidden="true" className="size-5 text-slate-600" />
             <p className="mt-3 text-sm text-slate-500">GoldRush proofs</p>
-            <p className="mt-1 text-2xl font-semibold">2</p>
+            <p className="mt-1 text-2xl font-semibold">Pending</p>
           </article>
           <article className="border border-slate-200 bg-white p-4">
             <Activity aria-hidden="true" className="size-5 text-slate-600" />

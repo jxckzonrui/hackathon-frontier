@@ -101,7 +101,9 @@ describe("VeilSettle MVP pages", () => {
     expect(screen.getByText(/qvac local checks/i)).toBeVisible();
     expect(screen.getByRole("button", { name: /prepare private payment/i })).toBeVisible();
 
-    rerender(<SettlementsPage />);
+    const settlementsPage = await SettlementsPage();
+
+    rerender(settlementsPage);
     expect(screen.getByRole("heading", { name: /settlement dashboard/i })).toBeVisible();
     expect(screen.getAllByText(/dune sim/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/goldrush/i).length).toBeGreaterThan(0);
