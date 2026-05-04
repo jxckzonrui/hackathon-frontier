@@ -1,10 +1,10 @@
 # VeilSettle Live Evidence
 
-Date:
-Branch:
-Deployment URL:
-Demo video URL:
-GitHub URL:
+Date: 2026-05-04
+Branch: `codex/veilsettle-core-tasks`
+Deployment URL: not yet published in repo
+Demo video URL: not yet published in repo
+GitHub URL: not yet published in repo
 
 ## Verification Commands
 

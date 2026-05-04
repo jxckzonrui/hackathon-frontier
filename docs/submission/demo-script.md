@@ -1,15 +1,29 @@
 # VeilSettle Demo Script
 
-1. Open agency dashboard.
-2. Create protocol audit sprint invoice for `client.sol`.
-3. Show encrypted invoice creation and public commitments.
-4. Open client review page and show QVAC local risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note.
-5. Prepare private payment proof through the demo flow.
-6. Explain MagicBlock unsigned private transaction preparation is wired, while wallet signing/submission is a deferred risk item unless Task 6 in `plan.md` is completed.
-7. Open split verification page.
-8. Show authorized party sees amount and line items.
-9. Show public verification hides amount, line items, memo, attachments, and client context.
-10. Open settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics.
-11. Show SNS provider/API contract for opt-in `.sol` identity; only claim live resolution if safe resolver evidence is added.
-12. State that PUSD is a demo denomination until official Solana mint/liquidity is confirmed.
-13. State that Supabase schema is included, while the submitted demo can run in local fallback mode unless live project evidence is added.
+## 0:00-0:25 Problem
+
+Web3 agencies need stablecoin invoice settlement proof without exposing invoice amount, scope, memo, attachments, or client context publicly.
+
+## 0:25-1:10 Create Private Invoice
+
+Show the agency dashboard, open the new invoice flow, and create the protocol audit sprint invoice for `client.sol`. Explain that the demo invoice is PUSD-denominated, while live PUSD settlement is not claimed until the official Solana mint/liquidity path is confirmed.
+
+## 1:10-1:45 Local Review
+
+Open the client review page and show QVAC-compatible local checks: risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note. Say that private invoice content is not sent to cloud review APIs.
+
+## 1:45-2:40 Private Payment Preparation
+
+Click `Prepare private payment`. Explain that the app calls the server-side private payment provider route. For MagicBlock, this release prepares an unsigned private SPL transfer for wallet signing; completed signing/submission is not claimed unless separate live evidence is added.
+
+## 2:40-3:25 Public Verification
+
+Open the split verification page. Show that the authorized party can see the amount and line items, while the public verification panel shows only status, commitments, and proof reference. Confirm that amount, memo, line items, attachments, and client context are absent from the public panel.
+
+## 3:25-4:10 Integrations
+
+Open the settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics. Show the integration status panel. Mention SNS as an opt-in identity provider/API contract; only claim live `.sol` resolution if safe resolver evidence has been added.
+
+## 4:10-4:45 Why It Matters
+
+Agencies, auditors, and service vendors can prove settlement without leaking commercial terms. The next production steps are signed wallet auth, verified onchain settlement proof, production key recovery, live Supabase verification, and confirmed stablecoin mint support.
