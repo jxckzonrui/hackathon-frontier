@@ -1,4 +1,5 @@
-import { LockKeyhole, ShieldCheck, WalletCards } from "lucide-react";
+import { LockKeyhole, ShieldCheck } from "lucide-react";
+import { PaymentSettlementActions } from "@/components/PaymentSettlementActions";
 
 const checks = [
   "No duplicate metadata hash",
@@ -6,7 +7,13 @@ const checks = [
   "SNS label client.sol matches expected wallet pattern",
 ];
 
-export default function PayInvoicePage() {
+type PayInvoicePageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
+  const { id } = await params;
+
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
       <div className="mx-auto flex max-w-4xl flex-col gap-6 px-6 py-8">
@@ -38,13 +45,7 @@ export default function PayInvoicePage() {
             </ul>
           </div>
 
-          <button
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white"
-            type="button"
-          >
-            <WalletCards aria-hidden="true" className="size-4" />
-            Prepare private payment
-          </button>
+          <PaymentSettlementActions invoiceId={id} />
         </section>
       </div>
     </main>

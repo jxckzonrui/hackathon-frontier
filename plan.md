@@ -126,6 +126,8 @@ git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN
 - [ ] Verify with a safe SQL schema check that `invoices` and `encrypted_invoice_blobs` exist and RLS is enabled.
 - [ ] Commit with `feat: connect invoice storage to supabase`.
 
+**Current blocker:** Local storage tests pass, but live Supabase migration/schema checks for project `fbggsyazebrtiwbcursq` require user approval and Supabase MCP reauthentication.
+
 ### Task 3: Working Invoice End-To-End Flow
 
 **Purpose:** Ensure the site works as a real demo before sponsor integrations.
@@ -138,12 +140,12 @@ git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN
 - Test: `apps/web/src/app/api/invoices/*.test.ts`
 - Test: `apps/web/e2e/invoice-flow.spec.ts`
 
-- [ ] Write failing API tests for create invoice, fetch invoice, mark paid, and public verify.
-- [ ] Write failing Playwright test for create invoice -> view invoice -> settle -> verify status.
-- [ ] Run Vitest and Playwright and confirm failures are for missing behavior.
-- [ ] Implement the minimum API/UI path for the full invoice lifecycle.
-- [ ] Verify no private invoice amount, memo, line items, or client context appears in public verify responses.
-- [ ] Run:
+- [x] Write failing API tests for create invoice, fetch invoice, mark paid, and public verify.
+- [x] Write failing Playwright test for create invoice -> view invoice -> settle -> verify status.
+- [x] Run Vitest and Playwright and confirm failures are for missing behavior.
+- [x] Implement the minimum API/UI path for the full invoice lifecycle.
+- [x] Verify no private invoice amount, memo, line items, or client context appears in public verify responses.
+- [x] Run:
 
 ```powershell
 corepack.cmd pnpm --filter @veilsettle/web test
@@ -151,7 +153,7 @@ corepack.cmd pnpm --filter @veilsettle/web build
 corepack.cmd pnpm --filter @veilsettle/web test:e2e
 ```
 
-- [ ] Commit with `feat: complete invoice demo flow`.
+- [x] Commit with `feat: complete invoice demo flow`.
 
 ### Task 4: Integration Provider Boundaries
 

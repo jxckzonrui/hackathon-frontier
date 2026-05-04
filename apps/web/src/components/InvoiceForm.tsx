@@ -23,6 +23,7 @@ const demoInvoice = {
 export function InvoiceForm() {
   const [status, setStatus] = useState("Ready");
   const [isCreating, setIsCreating] = useState(false);
+  const [invoiceId, setInvoiceId] = useState("demo-invoice");
 
   async function createInvoice() {
     setIsCreating(true);
@@ -38,6 +39,7 @@ export function InvoiceForm() {
 
       if (!response.ok || !json.invoiceId) {
         if (json.error === "Server configuration error") {
+          setInvoiceId("demo-invoice");
           setStatus("Demo invoice demo-invoice ready locally. Connect Supabase to persist invoices.");
           return;
         }
@@ -46,6 +48,7 @@ export function InvoiceForm() {
         return;
       }
 
+      setInvoiceId(json.invoiceId);
       setStatus(`Created invoice ${json.invoiceId}`);
     } catch {
       setStatus("Invoice creation failed");
@@ -120,7 +123,7 @@ export function InvoiceForm() {
           <p className="mt-3 min-h-5 text-sm text-slate-600">{status}</p>
           <Link
             className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-slate-950"
-            href="/pay/demo-invoice"
+            href={`/pay/${invoiceId}`}
           >
             Review client flow
             <ArrowRight aria-hidden="true" className="size-4" />

@@ -39,6 +39,10 @@ describe("VeilSettle MVP pages", () => {
     await waitFor(() => {
       expect(screen.getByText(/created invoice invoice-123/i)).toBeVisible();
     });
+    expect(screen.getByRole("link", { name: /review client flow/i })).toHaveAttribute(
+      "href",
+      "/pay/invoice-123",
+    );
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/invoices",
       expect.objectContaining({
@@ -88,7 +92,11 @@ describe("VeilSettle MVP pages", () => {
     const PayInvoicePage = (await import("./pay/[id]/page")).default;
     const SettlementsPage = (await import("./settlements/page")).default;
 
-    const { rerender } = render(<PayInvoicePage />);
+    const payInvoicePage = await PayInvoicePage({
+      params: Promise.resolve({ id: "demo-invoice" }),
+    });
+
+    const { rerender } = render(payInvoicePage);
     expect(screen.getByRole("heading", { name: /review and pay/i })).toBeVisible();
     expect(screen.getByText(/qvac local checks/i)).toBeVisible();
     expect(screen.getByRole("button", { name: /prepare private payment/i })).toBeVisible();
