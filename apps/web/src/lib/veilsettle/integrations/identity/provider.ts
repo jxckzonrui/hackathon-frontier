@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-import { Connection, PublicKey } from "@solana/web3.js";
 import { displayIdentity, isSnsName, normalizeSnsName } from "../../sns";
 import type { IntegrationProviderStatus } from "../status";
 
@@ -15,14 +13,6 @@ type SnsIdentityProviderOptions = {
   reverseLookup?: (wallet: string) => Promise<string | null>;
 };
 
-type SnsSdk = {
-  resolve(connection: Connection, domain: string): Promise<PublicKey>;
-  getFavoriteDomain(
-    connection: Connection,
-    owner: PublicKey,
-  ): Promise<{ reverse: string; stale: boolean }>;
-};
-
 export type IdentityProvider = {
   resolveName(name: string): Promise<string | null>;
   reverseLookup(wallet: string): Promise<string | null>;
@@ -30,52 +20,15 @@ export type IdentityProvider = {
   status(): IntegrationProviderStatus;
 };
 
-const requireSnsSdk = createRequire(import.meta.url);
-
-function loadSnsSdk(): SnsSdk {
-  return requireSnsSdk("@bonfida/spl-name-service") as SnsSdk;
-}
-
-function createDefaultResolveDomain(rpcUrl?: string) {
-  if (!rpcUrl) {
-    return async () => null;
-  }
-
-  const connection = new Connection(rpcUrl);
-
-  return async (name: string) => {
-    const publicKey = await loadSnsSdk().resolve(connection, name);
-
-    return publicKey.toBase58();
-  };
-}
-
-function createDefaultReverseLookup(rpcUrl?: string) {
-  if (!rpcUrl) {
-    return async () => null;
-  }
-
-  const connection = new Connection(rpcUrl);
-
-  return async (wallet: string) => {
-    const favoriteDomain = await loadSnsSdk()
-      .getFavoriteDomain(connection, new PublicKey(wallet))
-      .catch(() => null);
-
-    if (!favoriteDomain || favoriteDomain.stale) {
-      return null;
-    }
-
-    return normalizeSnsName(favoriteDomain.reverse);
-  };
-}
+const unresolvedSnsLookup = async () => null;
 
 export function createSnsIdentityProvider(
   options: SnsIdentityProviderOptions = {},
 ): IdentityProvider {
-  const resolveDomain = options.resolveDomain ?? createDefaultResolveDomain(options.rpcUrl);
-  const reverseLookupDomain = options.reverseLookup ?? createDefaultReverseLookup(options.rpcUrl);
-  const shouldVerifyDisplay = Boolean(options.rpcUrl || options.resolveDomain);
+  const resolveDomain = options.resolveDomain ?? unresolvedSnsLookup;
+  const reverseLookupDomain = options.reverseLookup ?? unresolvedSnsLookup;
+  const hasResolver = Boolean(options.resolveDomain || options.reverseLookup);
+  const shouldVerifyDisplay = Boolean(options.resolveDomain);
 
   return {
     async resolveName(name) {
@@ -116,9 +69,11 @@ export function createSnsIdentityProvider(
         category: "identity",
         id: "sns-opt-in-resolution",
         label: "SNS identity",
-        state: options.rpcUrl ? "configured" : "fallback",
+        state: hasResolver ? "configured" : "fallback",
         publicSafe: true,
-        detail: "Resolves .sol names and reverse lookup only for opt-in merchant display.",
+        detail: hasResolver
+          ? "Resolves .sol names and reverse lookup only for opt-in merchant display."
+          : "SNS provider contract is available; live resolver is disabled until a safe dependency or API path is configured.",
       };
     },
   };

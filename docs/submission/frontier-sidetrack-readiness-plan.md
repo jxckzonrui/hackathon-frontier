@@ -47,7 +47,7 @@ Current integrations:
 - PUSD: supported as demo denomination; official Solana mint/liquidity still needs confirmation before claiming live settlement.
 - MagicBlock: Private Payments provider builds unsigned private SPL transfer transactions; wallet signing/submission is tracked as a separate risky mini-task.
 - Dune SIM: server adapter and redacted analytics route exist; live-key evidence still needs to be captured.
-- SNS: provider and API route exist for opt-in `.sol` resolution; UI evidence still needs to be captured.
+- SNS: provider and API route exist for opt-in `.sol` identity; vulnerable SDK dependency was removed and live resolver evidence still needs to be captured through a safe API or dependency path.
 - Torque: event emitter exists; real campaign flow is optional after core release.
 - GoldRush, Umbra, Cloak, Zerion, theMiracle: optional or deferred unless explicitly implemented and evidenced.
 

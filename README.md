@@ -15,7 +15,7 @@ Verified in this release:
 - Encrypted invoice creation and public/private receipt separation.
 - Local invoice review with a QVAC-compatible deterministic fallback.
 - Dune SIM server adapter for redacted settlement analytics.
-- SNS provider/API for opt-in `.sol` identity.
+- SNS provider/API contract for opt-in `.sol` identity; live resolver evidence is pending.
 - MagicBlock Private Payments unsigned transaction preparation.
 
 Not claimed as complete:
@@ -27,7 +27,7 @@ Not claimed as complete:
 ## Current Track Status
 
 - Ready MVP surface: Main Frontier, 100xDevs, Adevar Labs.
-- Evidence-dependent tracks: RPC Fast, Dune SIM, SNS, QVAC, MagicBlock.
+- Evidence-dependent tracks: RPC Fast, Dune SIM, SNS live resolution, QVAC, MagicBlock.
 - Blocked pending confirmation: Palm USD Solana mint/liquidity and live Supabase migration/application.
 - Optional later: GoldRush, Torque, Zerion, theMiracle.
 

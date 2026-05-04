@@ -36,4 +36,16 @@ describe("SNS identity provider", () => {
       }),
     ).resolves.toBe("Clie...1111");
   });
+
+  it("does not report live SNS configuration from an RPC URL without a safe resolver", () => {
+    const provider = createSnsIdentityProvider({
+      rpcUrl: "https://example.invalid",
+    });
+
+    expect(provider.status()).toEqual(
+      expect.objectContaining({
+        state: "fallback",
+      }),
+    );
+  });
 });

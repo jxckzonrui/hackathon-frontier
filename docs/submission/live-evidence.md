@@ -28,3 +28,16 @@ GitHub URL:
 | QVAC | | |
 | PUSD | | |
 | RPC Fast | | |
+
+## Dependency Audit Evidence
+
+- Removed unused web dependencies: `@coral-xyz/anchor`, `@solana/wallet-adapter-react`, `@solana/wallet-adapter-react-ui`, `@solana/wallet-adapter-wallets`.
+- Removed vulnerable SNS SDK dependency path: `@bonfida/spl-name-service -> @solana/spl-token -> bigint-buffer`.
+- Current `corepack.cmd pnpm audit --audit-level moderate` status: no critical or high advisories remain.
+- Remaining moderate advisory: `postcss <8.5.10` through `next@16.2.4 -> postcss@8.4.31`. Mitigation for hackathon release: no user-supplied CSS stringification path is exposed by VeilSettle; keep Next.js patched when an upstream release updates the transitive PostCSS version.
+
+## SNS Evidence
+
+- Provider/API contract exists for opt-in `.sol` identity.
+- Live SNS resolver is fallback-only until a safe resolver dependency or API path is configured.
+- Removed the vulnerable `@bonfida/spl-name-service` dependency to keep the public repo free of critical/high audit findings.

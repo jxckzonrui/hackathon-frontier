@@ -7,7 +7,7 @@
 - Adevar Labs
 - Tether QVAC: primary only with clear deterministic fallback or real runtime evidence.
 - Dune SIM: primary only with redacted adapter evidence.
-- SNS: primary only with opt-in identity evidence.
+- SNS: primary only with opt-in identity evidence from a safe resolver path.
 
 ## Conditional
 
