@@ -66,7 +66,8 @@ export function InvoiceForm() {
           </span>
           <div>
             <h2 className="text-lg font-semibold text-slate-950">Protocol audit sprint</h2>
-            <p className="text-sm text-slate-600">2,500.00 PUSD due 2026-05-08</p>
+            <p className="text-sm text-slate-600">2,500.00 PUSD demo denomination</p>
+            <p className="text-xs text-slate-500">Due 2026-05-08</p>
           </div>
         </div>
       </div>

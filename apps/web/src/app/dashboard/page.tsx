@@ -21,7 +21,7 @@ export default function DashboardPage() {
               Private stablecoin settlement
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600">
-              Encrypted PUSD invoices, Solana commitments, private payment proofs.
+              Encrypted PUSD-denominated demo invoices, Solana commitments, private payment proofs.
             </p>
           </div>
           <nav className="flex flex-wrap items-center gap-2">

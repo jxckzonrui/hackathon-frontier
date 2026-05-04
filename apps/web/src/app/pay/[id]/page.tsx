@@ -41,7 +41,9 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold">Protocol audit sprint</h2>
-              <p className="mt-1 text-sm text-slate-600">2,500.00 PUSD due 2026-05-08</p>
+              <p className="mt-1 text-sm text-slate-600">
+                2,500.00 PUSD demo denomination due 2026-05-08
+              </p>
             </div>
             <span className="grid size-10 place-items-center rounded-md bg-emerald-50 text-emerald-700">
               <LockKeyhole aria-hidden="true" className="size-5" />

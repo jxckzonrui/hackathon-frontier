@@ -61,6 +61,7 @@ describe("VeilSettle MVP pages", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     render(<InvoiceForm />);
+    expect(screen.getByText("2,500.00 PUSD demo denomination")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: /create encrypted invoice/i }));
 
     await waitFor(() => {

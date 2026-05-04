@@ -24,6 +24,8 @@ Not claimed as complete:
 - Completed MagicBlock private payments until wallet signing/submission is wired.
 - Production-ready wallet auth, encryption key recovery, or onchain proof verification.
 
+Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle does not claim live PUSD settlement until the official Solana SPL mint and liquidity path are confirmed.
+
 ## Current Track Status
 
 - Ready MVP surface: Main Frontier, 100xDevs, Adevar Labs.

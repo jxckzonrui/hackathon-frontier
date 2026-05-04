@@ -74,3 +74,10 @@ GitHub URL:
 - Wallet signing: not verified in this environment.
 - Submission signature: not verified in this environment.
 - Release decision: do not claim completed MagicBlock private payment settlement until wallet signing/submission and final signature capture are wired.
+
+## PUSD Evidence
+
+- Public source check on 2026-05-04 found Palm USD product pages, but no official Solana SPL mint/liquidity source suitable for hardcoding in the app.
+- Release decision: PUSD remains a demo invoice denomination.
+- Private payment preparation uses USDC by default until an official `MAGICBLOCK_PUSD_MINT` value is confirmed.
+- VeilSettle does not claim live PUSD settlement in this release.

@@ -25,3 +25,5 @@
 
 - LPAgent, Jupiter, Encrypt/Ika, SagaPad, dum.fun.
 - Regional tracks unless team eligibility is truthful.
+
+Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle does not claim live PUSD settlement until the official Solana SPL mint and liquidity path are confirmed.
