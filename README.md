@@ -6,11 +6,28 @@ Private stablecoin invoice settlement for Web3 agencies.
 
 Agency creates an encrypted protocol-audit invoice, client reviews local QVAC checks, client pays through a private payment path, and public verification shows only status and commitments.
 
+## Current Release Status
+
+VeilSettle is submitted as a hackathon MVP for privacy-preserving stablecoin invoice settlement.
+
+Verified in this release:
+
+- Encrypted invoice creation and public/private receipt separation.
+- Local invoice review with a QVAC-compatible deterministic fallback.
+- Dune SIM server adapter for redacted settlement analytics.
+- SNS provider/API for opt-in `.sol` identity.
+- MagicBlock Private Payments unsigned transaction preparation.
+
+Not claimed as complete:
+
+- Live PUSD settlement until the official Solana mint/liquidity source is confirmed.
+- Completed MagicBlock private payments until wallet signing/submission is wired.
+- Production-ready wallet auth, encryption key recovery, or onchain proof verification.
+
 ## Current Track Status
 
-- Ready demo surface: Main Frontier, 100xDevs, Adevar Labs, RPC Fast.
-- Implemented integrations: QVAC deterministic local review fallback, Dune SIM server adapter with redacted analytics, SNS identity provider and API route.
-- Partial integration: MagicBlock Private Payments transaction builder. Wallet signing/submission is intentionally deferred.
+- Ready MVP surface: Main Frontier, 100xDevs, Adevar Labs.
+- Evidence-dependent tracks: RPC Fast, Dune SIM, SNS, QVAC, MagicBlock.
 - Blocked pending confirmation: Palm USD Solana mint/liquidity and live Supabase migration/application.
 - Optional later: GoldRush, Torque, Zerion, theMiracle.
 

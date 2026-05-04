@@ -6,7 +6,7 @@ This document records the current Superteam Earn Frontier sidetrack requirements
 
 ## Executive Summary
 
-VeilSettle is a strong fit for a privacy-preserving stablecoin invoice settlement demo, but the current demo is not yet a complete submission for every sidetrack. The app already has a Next.js web demo, Supabase storage schema, an Anchor commitment registry, PUSD invoice UI, static QVAC checks, mock private payments, basic SNS formatting, static Dune/GoldRush dashboard labels, and a Torque event stub.
+VeilSettle is a strong fit for a privacy-preserving stablecoin invoice settlement demo, but the current demo is not yet a complete submission for every sidetrack. The app already has a Next.js web demo, Supabase storage schema, an Anchor commitment registry, PUSD invoice UI, local QVAC-compatible review checks, MagicBlock unsigned private transfer preparation, Dune SIM redacted analytics adapter, SNS provider/API, and a Torque event stub.
 
 To make the project credible for hackathon judging, the next build should focus on one coherent product:
 
@@ -42,17 +42,14 @@ Tracked product surfaces:
 
 Current integrations:
 
-- Supabase: schema exists, but live project/env connection still needs to be applied and verified.
-- QVAC: current `qvac.ts` returns local rule checks, not QVAC SDK inference.
-- PUSD: currency exists in app types/demo, but official PUSD Solana mint/liquidity still needs confirmation before hardcoding.
-- Cloak: current `privacy-payments.ts` returns a mock Cloak reference when `NEXT_PUBLIC_ENABLE_CLOAK=true`; not a real SDK transaction.
-- Umbra: not implemented.
-- MagicBlock: not implemented.
-- Dune/GoldRush: settlement page labels are static; no real API calls.
-- Torque: event emitter exists, but endpoint/key naming and real campaign flow need alignment.
-- SNS: basic `.sol` string validation only; no SNS resolution.
-- Zerion: not implemented.
-- theMiracle: not implemented.
+- Supabase: schema and server storage boundary exist; live project migration still needs final verification.
+- QVAC: local invoice review flow exists with deterministic fallback; real runtime depth needs evidence if used as a QVAC claim.
+- PUSD: supported as demo denomination; official Solana mint/liquidity still needs confirmation before claiming live settlement.
+- MagicBlock: Private Payments provider builds unsigned private SPL transfer transactions; wallet signing/submission is tracked as a separate risky mini-task.
+- Dune SIM: server adapter and redacted analytics route exist; live-key evidence still needs to be captured.
+- SNS: provider and API route exist for opt-in `.sol` resolution; UI evidence still needs to be captured.
+- Torque: event emitter exists; real campaign flow is optional after core release.
+- GoldRush, Umbra, Cloak, Zerion, theMiracle: optional or deferred unless explicitly implemented and evidenced.
 
 ## Recommended Architecture
 
@@ -77,7 +74,7 @@ All API keys and service-role credentials must stay server-side. Browser code sh
 | Adevar Labs | Strong if security package is real | Frontier submission, public GitHub, complete technical docs, project description, security statement, funding/pitch deck. Focus includes DeFi, RWAs, consumer apps, stablecoins. | Anchor tests, threat model, security docs, audit scope, invariant tests. | No API key. Prize is audit credits, reportedly applicable up to 50 percent of total audit cost, so it may not cover a full audit. | Add threat model, program/account diagrams, admin/key policy, known risks, audit readiness checklist, pitch/funding summary. |
 | RPC Fast | Good low-risk infra track | Colosseum submission, public repo, README, demo/deck, follow RPC Fast on X, join Telegram. Bonus requires using RPC Fast. | `@solana/web3.js`, RPC provider abstraction, optional WebSocket/Yellowstone watcher. | Hackathon plan advertised with 120M CU/month, 500 req/s, unlimited bandwidth, Shredstream/Yellowstone, Frankfurt endpoint. Paid plans may apply after hackathon. Env: `SOLANA_RPC_URL`, `SOLANA_WS_URL`, optional `YELLOWSTONE_GRPC_URL`. | Use RPC Fast endpoint for settlement status, transaction confirmation, and watcher demo; document why reliable RPC matters. |
 | Tether QVAC | Strong if QVAC becomes core | Meaningful QVAC SDK integration, not a wrapper. Must be valid Colosseum submission, public GitHub, working demo/video, answer how QVAC is integrated. Judging: 40 percent QVAC depth, 30 percent product value, 20 percent innovation, 10 percent demo. | `@qvac/sdk`, optional `@qvac/cli`, local model files, Node >= 22.17 for SDK flow. | No cloud API key. Cost is local compute, model storage, and hardware time. | Replace static checks with local QVAC review: OCR/embedding/RAG or local LLM consistency checks over invoice terms. Best demo: "invoice review happens locally; private invoice data never leaves device." |
-| Palm USD | Strong stablecoin fit, needs confirmation | Build real PUSD utility on Solana. Requires Colosseum link, GitHub, demo video, 5 min pitch deck max 12 slides. Judged on technical execution, use case, innovation, traction, team. | SPL token support, wallet adapter, PUSD mint metadata, optional settlement receipt. | Public self-serve API/mint docs were not clearly found. Need sponsor-confirmed official Solana mint and liquidity. Normal SPL transfers require RPC and wallet. | Keep PUSD as default invoice currency, confirm official mint, show PUSD settlement path, add Palm-specific deck slide. |
+| Palm USD | Strong stablecoin fit, needs confirmation | Build PUSD utility on Solana after official mint/liquidity confirmation. Requires Colosseum link, GitHub, demo video, 5 min pitch deck max 12 slides. Judged on technical execution, use case, innovation, traction, team. | SPL token support, wallet adapter, PUSD mint metadata, optional settlement receipt. | Public self-serve API/mint docs were not clearly found. Need sponsor-confirmed official Solana mint and liquidity. Normal SPL transfers require RPC and wallet. | Keep PUSD as default invoice denomination, confirm official mint, show PUSD settlement path only after evidence, add Palm-specific deck slide. |
 | Cloak | Excellent direct fit | Working demo/live deployment or clear local setup. Public GitHub. README must explain problem, target users, Cloak SDK centrality, setup, deployed IDs/links. Demo video under 5 minutes. Judged: 40 percent integration depth, 30 percent product, 30 percent real-world use. | `@cloak.dev/sdk`, `@solana/web3.js`, Solana wallet/RPC. | No API key visible. Costs include Solana fees plus Cloak fee floor and percentage fee according to Cloak docs/listing research. Env: `SOLANA_RPC_URL`, wallet/key path for local demo only. | Build real Cloak private invoice payment or claim-link flow, plus viewing-key/auditor export. |
 | Umbra | Excellent direct fit | Build product/prototype using Umbra SDK. Public GitHub, README with problem/users/Umbra usage/build instructions/deployed links, demo video under 5 minutes. Judged on SDK centrality, innovation, technical execution, commercial potential, impact, UX, clarity. | `@umbra-privacy/sdk`, Solana RPC, subscription RPC, optional indexer/relayer endpoints. | No API key visible. Costs include Solana fees and Umbra protocol/dynamic fees. Env: `SOLANA_RPC_URL`, `SOLANA_WS_URL`, optional `UMBRA_INDEXER_API_URL`. | Build Umbra settlement adapter, encrypted balance/payment-link demo, viewing-key audit report. |
 | MagicBlock | Excellent direct fit | Privacy-first systems using ER, PER, or Private Payments API. Requires live deployment with successful MagicBlock integration, public GitHub, 3 min demo. Judged: technology 40 percent, impact 30 percent, creativity/UX 30 percent. | MagicBlock ER/PER SDK/API, Private Payments API, wallet auth, Solana RPC. | Public pricing unclear; likely needs sponsor/docs coordination for production. Env likely `MAGICBLOCK_PAYMENTS_API_URL`, `MAGICBLOCK_TEE_RPC_URL`, `SOLANA_RPC_URL`, `USDC_MINT`, auth/session token. | Build deposit -> private transfer -> private balance -> withdraw invoice flow with invoice reference. This may be the best single privacy rail for the demo if API access is straightforward. |
@@ -210,7 +207,7 @@ Actions:
 - Keep USDC/USDT fallback for privacy rails that support them more readily.
 - Show invoice denominated in PUSD and public receipt with only commitments/proof.
 
-Expected outcome: VeilSettle is a real PUSD utility demo, not just a UI label.
+Expected outcome after sponsor confirmation: VeilSettle can be submitted as a PUSD utility demo instead of only showing PUSD as a UI denomination.
 
 ### Phase 6: Data And Analytics
 

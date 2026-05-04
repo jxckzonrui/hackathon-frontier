@@ -2,6 +2,8 @@
 
 VeilSettle stores invoice details encrypted offchain and stores only commitments on Solana. Public observers can verify status and hashes, but cannot read amounts, line items, memo, attachments, or client context.
 
+Submission eligibility and team registration are verified outside the public repository. This file intentionally does not include private team-member data.
+
 MVP risks:
 
 - Demo key handling is session-scoped and must be replaced with wallet-encrypted per-recipient keys before production.
