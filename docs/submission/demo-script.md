@@ -12,3 +12,4 @@
 10. Open settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics.
 11. Show SNS identity route/provider supports opt-in `.sol` resolution and reverse lookup.
 12. State that PUSD is a demo denomination until official Solana mint/liquidity is confirmed.
+13. State that Supabase schema is included, while the submitted demo can run in local fallback mode unless live project evidence is added.

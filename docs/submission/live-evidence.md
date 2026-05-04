@@ -29,6 +29,15 @@ GitHub URL:
 | PUSD | | |
 | RPC Fast | | |
 
+## Supabase Evidence
+
+- Release mode: local fallback unless live project migration is confirmed before submission.
+- `apps/web/.env.example` includes empty `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` names.
+- `supabase/migrations/0001_veilsettle.sql` includes `invoices` and `encrypted_invoice_blobs`.
+- RLS is enabled in the migration for both invoice tables.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- storage`: passed, 1 test file and 5 tests.
+- Live migration was not applied in this task, and live Supabase mode is not claimed.
+
 ## Dependency Audit Evidence
 
 - Removed unused web dependencies: `@coral-xyz/anchor`, `@solana/wallet-adapter-react`, `@solana/wallet-adapter-react-ui`, `@solana/wallet-adapter-wallets`.

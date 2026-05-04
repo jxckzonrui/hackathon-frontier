@@ -31,6 +31,10 @@ Not claimed as complete:
 - Blocked pending confirmation: Palm USD Solana mint/liquidity and live Supabase migration/application.
 - Optional later: GoldRush, Torque, Zerion, theMiracle.
 
+## Supabase Mode
+
+The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`, but live project migration is not claimed until the project migration and RLS checks are verified.
+
 ## Setup
 
 1. Install dependencies with `corepack.cmd pnpm install`.
