@@ -249,6 +249,8 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - [ ] Run tests and build.
 - [ ] Commit with `feat: support pusd invoice settlement`.
 
+**Current blocker:** Public Palm USD docs mention Solana support, but no official PUSD SPL mint/liquidity reference was found. Do not hardcode PUSD metadata until the sponsor or official docs confirm it.
+
 ### Task 8: Dune SIM Analytics
 
 **Purpose:** Add real privacy-safe analytics for the Dune track.
