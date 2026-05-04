@@ -94,17 +94,17 @@ Not targeted by default:
 - Modify: `docs/security/publication-checklist.md`
 - Modify: `README.md`
 
-- [ ] Check current git status with `git status --short --untracked-files=all`.
-- [ ] Verify ignored private files include `.env`, `.env.*`, wallet/key files, `.worktrees`, `agent.md`, `documentation.md`, and local Playwright artifacts.
-- [ ] Add empty env variable names to `apps/web/.env.example` for Supabase, RPC, Dune, GoldRush, Torque, Zerion, and selected privacy provider.
-- [ ] Run a secret scan:
+- [x] Check current git status with `git status --short --untracked-files=all`.
+- [x] Verify ignored private files include `.env`, `.env.*`, wallet/key files, `.worktrees`, `agent.md`, `documentation.md`, and local Playwright artifacts.
+- [x] Add empty env variable names to `apps/web/.env.example` for Supabase, RPC, Dune, GoldRush, Torque, Zerion, and selected privacy provider.
+- [x] Run a secret scan:
 
 ```powershell
 git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN (RSA|OPENSSH|EC|PRIVATE)|sk-[A-Za-z0-9]|ghp_[A-Za-z0-9])" HEAD
 ```
 
-- [ ] Confirm any matches are only safe placeholders or documentation.
-- [ ] Commit with `chore: harden public repo safety`.
+- [x] Confirm any matches are only safe placeholders or documentation.
+- [x] Commit with `chore: harden public repo safety`.
 
 ### Task 2: Supabase Live Connection
 
@@ -184,6 +184,8 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - MagicBlock if Private Payments API access is available and can be shown live.
 - Cloak if SDK setup is fastest for a real private invoice payment.
 - Umbra if SDK/indexer/relayer flow is fastest for a real payment link and viewing-key story.
+
+**Deferred risk note:** For the MagicBlock/privacy track, completing signing/submission is preferable, but it should be treated as a separate risky mini-task after the core demo is stable.
 
 **Files:**
 
