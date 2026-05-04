@@ -10,12 +10,12 @@ GitHub URL: not yet published in repo
 
 | Check | Command | Result |
 |---|---|---|
-| Lint | `corepack.cmd pnpm --filter @veilsettle/web lint` | |
-| Unit tests | `corepack.cmd pnpm --filter @veilsettle/web test` | |
-| Build | `corepack.cmd pnpm --filter @veilsettle/web build` | |
-| E2E | `corepack.cmd pnpm --filter @veilsettle/web test:e2e` | |
-| Audit | `corepack.cmd pnpm audit --audit-level moderate` | |
-| Secret scan | `git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN (RSA|OPENSSH|EC|PRIVATE)|sk-[A-Za-z0-9]|ghp_[A-Za-z0-9])" HEAD` | |
+| Lint | `corepack.cmd pnpm --filter @veilsettle/web lint` | Passed on 2026-05-04, exit 0. |
+| Unit tests | `corepack.cmd pnpm --filter @veilsettle/web test` | Passed on 2026-05-04, 15 files and 51 tests. |
+| Build | `corepack.cmd pnpm --filter @veilsettle/web build` | Passed on 2026-05-04, exit 0. |
+| E2E | `corepack.cmd pnpm --filter @veilsettle/web test:e2e` | Passed on 2026-05-04, 2 Playwright tests. |
+| Audit | `corepack.cmd pnpm audit --audit-level moderate` | Exit 1 from one documented moderate `postcss` advisory; no critical/high advisories. |
+| Secret scan | `git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN (RSA|OPENSSH|EC|PRIVATE)|sk-[A-Za-z0-9]|ghp_[A-Za-z0-9])" HEAD` | Matches inspected; only placeholders, env names, tests, or docs warnings. |
 
 ## Integration Evidence
 
@@ -113,3 +113,10 @@ GitHub URL: not yet published in repo
 - `corepack.cmd pnpm anchor:test`: not run in Task 11 because Anchor CLI is unavailable.
 - `cargo test`: not run in Task 11 because Cargo is unavailable.
 - Release claim: Anchor program source is included, but fresh local program test execution is not claimed from this environment.
+
+## Final Verification Evidence
+
+- `git status --short --branch --untracked-files=all`: clean before final evidence update.
+- Docs claim scan: no unresolved placeholder markers; matches are explicit non-claims, track requirements, sources, or the historical audit warnings.
+- Public/private receipt behavior: Playwright checks confirm public verification contains status/proof/commitments and does not expose amount or private memo.
+- Generated `apps/web/next-env.d.ts` build churn was reverted to the tracked route types import.

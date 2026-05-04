@@ -20,3 +20,10 @@ Before pushing or making the repository public:
 10. Confirm public verification was checked for amount, memo, line item, attachment, and client leakage.
 11. Confirm Supabase service role key is only in server/deployment secrets.
 12. Confirm payment proof references are provider-prefixed.
+
+## Final Verification Notes
+
+- 2026-05-04: Web lint, unit tests, build, and Playwright E2E passed.
+- 2026-05-04: Dependency audit has no critical/high advisories. One moderate Next/PostCSS advisory remains documented in `docs/submission/live-evidence.md`.
+- 2026-05-04: Secret scan matches were inspected and are placeholders, env names, tests, or docs warnings.
+- 2026-05-04: Public verification E2E keeps amount and private memo out of the public panel.
