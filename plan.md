@@ -169,13 +169,13 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Modify: existing adapter files under `apps/web/src/lib/veilsettle`
 - Test: `apps/web/src/lib/veilsettle/integrations/**/*.test.ts`
 
-- [ ] Write failing contract tests for each provider boundary.
-- [ ] Verify the tests fail because provider interfaces/adapters are absent or incomplete.
-- [ ] Move existing mock/static adapters behind explicit provider interfaces.
-- [ ] Ensure provider return types expose public-safe receipt fields only.
-- [ ] Add provider status data for the dashboard.
-- [ ] Run unit tests and build.
-- [ ] Commit with `refactor: add integration provider boundaries`.
+- [x] Write failing contract tests for each provider boundary.
+- [x] Verify the tests fail because provider interfaces/adapters are absent or incomplete.
+- [x] Move existing mock/static adapters behind explicit provider interfaces.
+- [x] Ensure provider return types expose public-safe receipt fields only.
+- [x] Add provider status data for the dashboard.
+- [x] Run unit tests and build.
+- [x] Commit with `refactor: add integration provider boundaries`.
 
 ### Task 5: First Real Privacy Rail
 
