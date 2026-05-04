@@ -281,12 +281,12 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Modify: `apps/web/src/app/dashboard/*`
 - Test: `apps/web/src/lib/veilsettle/integrations/identity/sns.test.ts`
 
-- [ ] Write failing tests for `.sol` forward resolution, reverse lookup, invalid names, and opt-in display.
-- [ ] Verify tests fail for current regex-only behavior.
-- [ ] Implement SNS resolution behind the identity provider.
-- [ ] Add merchant identity display only where the user opts in.
-- [ ] Run tests and build.
-- [ ] Commit with `feat: add sns identity resolution`.
+- [x] Write failing tests for `.sol` forward resolution, reverse lookup, invalid names, and opt-in display.
+- [x] Verify tests fail for current regex-only behavior.
+- [x] Implement SNS resolution behind the identity provider.
+- [x] Add merchant identity display only where the user opts in.
+- [x] Run tests and build.
+- [x] Commit with `feat: add sns identity resolution`.
 
 ### Task 10: Submission Package
 
