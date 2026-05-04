@@ -65,3 +65,12 @@ GitHub URL:
 - `corepack.cmd pnpm --filter @veilsettle/web test -- privacy payment-proof`: passed, 2 test files and 6 tests.
 - `corepack.cmd pnpm --filter @veilsettle/web test:e2e`: passed, 2 Playwright tests.
 - `corepack.cmd pnpm --filter @veilsettle/web build`: passed and includes `/api/privacy/payment`.
+
+## MagicBlock Evidence
+
+- Provider: MagicBlock Private Payments when `PRIVACY_PROVIDER=magicblock`.
+- Current release claim: unsigned private SPL transfer preparation only.
+- API response support: provider parses `transactionBase64`, `sendTo`, and `requiredSigners`.
+- Wallet signing: not verified in this environment.
+- Submission signature: not verified in this environment.
+- Release decision: do not claim completed MagicBlock private payment settlement until wallet signing/submission and final signature capture are wired.
