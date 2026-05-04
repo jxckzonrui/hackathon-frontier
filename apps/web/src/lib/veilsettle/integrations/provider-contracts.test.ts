@@ -5,7 +5,10 @@ import { staticSettlementDataProvider } from "./data/provider";
 import { torqueGrowthProvider } from "./growth/provider";
 import { optInSnsIdentityProvider } from "./identity/provider";
 import { getIntegrationProviderStatuses } from "./status";
-import { getPrivatePaymentProvider } from "./privacy/provider";
+import {
+  createMagicBlockPrivatePaymentProvider,
+  getPrivatePaymentProvider,
+} from "./privacy/provider";
 
 const draft: InvoiceDraft = {
   clientDisplay: "client.sol",
@@ -28,8 +31,16 @@ describe("integration provider contracts", () => {
   it("keeps private payment providers behind one public-safe contract", async () => {
     const provider = getPrivatePaymentProvider();
 
+    const quote = await provider.quotePayment({
+      invoiceId: "invoice-1",
+      senderWallet: "Client111111111111111111111111111111111111",
+      recipientWallet: "Agency111111111111111111111111111111111111",
+      amountMinor: draft.amountMinor,
+      currency: draft.currency,
+    });
     const result = await provider.preparePayment({
       invoiceId: "invoice-1",
+      senderWallet: "Client111111111111111111111111111111111111",
       recipientWallet: "Agency111111111111111111111111111111111111",
       amountMinor: draft.amountMinor,
       currency: draft.currency,
@@ -39,10 +50,81 @@ describe("integration provider contracts", () => {
       category: "privacy",
       publicSafe: true,
     });
+    expect(quote).toMatchObject({
+      provider: "mock",
+      requiresWalletSignature: true,
+      publicSafe: true,
+    });
     expect(result).toMatchObject({
       provider: "mock",
       paymentProofReference: "mock:invoice-1",
     });
+    expect(JSON.stringify(result)).not.toContain(draft.amountMinor);
+  });
+
+  it("builds MagicBlock private SPL transfer transactions without exposing invoice details", async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          kind: "transfer",
+          version: "legacy",
+          transactionBase64: "base64-transaction",
+          sendTo: "base",
+          recentBlockhash: "blockhash",
+          lastValidBlockHeight: 123,
+          instructionCount: 1,
+          requiredSigners: ["Client111111111111111111111111111111111111"],
+          validator: "validator",
+        }),
+    });
+    const provider = createMagicBlockPrivatePaymentProvider({
+      apiUrl: "https://payments.magicblock.app",
+      fetcher,
+      mintByCurrency: {
+        PUSD: "PusdMint111111111111111111111111111111111111",
+      },
+    });
+
+    const result = await provider.preparePayment({
+      invoiceId: "invoice-1",
+      senderWallet: "Client111111111111111111111111111111111111",
+      recipientWallet: "Agency111111111111111111111111111111111111",
+      amountMinor: draft.amountMinor,
+      currency: "PUSD",
+    });
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://payments.magicblock.app/v1/spl/transfer",
+      expect.objectContaining({
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+    const requestBody = JSON.parse(fetcher.mock.calls[0][1].body);
+    expect(requestBody).toMatchObject({
+      from: "Client111111111111111111111111111111111111",
+      to: "Agency111111111111111111111111111111111111",
+      mint: "PusdMint111111111111111111111111111111111111",
+      amount: 2500000000,
+      visibility: "private",
+      fromBalance: "base",
+      toBalance: "base",
+      initIfMissing: true,
+      initAtasIfMissing: true,
+      initVaultIfMissing: false,
+      split: 1,
+      legacy: true,
+    });
+    expect(requestBody).not.toHaveProperty("memo");
+    expect(result).toMatchObject({
+      provider: "magicblock",
+      paymentProofReference: "magicblock:invoice-1",
+      unsignedTransactionBase64: "base64-transaction",
+      sendTo: "base",
+      requiredSigners: ["Client111111111111111111111111111111111111"],
+    });
+    expect(JSON.stringify(result)).not.toContain(draft.memo);
     expect(JSON.stringify(result)).not.toContain(draft.amountMinor);
   });
 

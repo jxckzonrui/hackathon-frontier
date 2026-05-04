@@ -197,15 +197,17 @@ corepack.cmd pnpm --filter @veilsettle/web test:e2e
 - Test: `apps/web/src/lib/veilsettle/integrations/privacy/*.test.ts`
 - Test: `apps/web/e2e/private-settlement.spec.ts`
 
-- [ ] Run a short feasibility check for MagicBlock, Cloak, and Umbra docs/examples.
-- [ ] Pick exactly one provider for the core build.
-- [ ] Write failing provider contract tests for quote/payment/proof/status behavior.
-- [ ] Verify the tests fail for missing real provider behavior.
-- [ ] Implement the selected provider behind the existing interface.
+- [x] Run a short feasibility check for MagicBlock, Cloak, and Umbra docs/examples.
+- [x] Pick exactly one provider for the core build.
+- [x] Write failing provider contract tests for quote/payment/proof/status behavior.
+- [x] Verify the tests fail for missing real provider behavior.
+- [x] Implement the selected provider behind the existing interface.
 - [ ] Store only proof references, commitment IDs, and status in Supabase.
-- [ ] Add dashboard copy that clearly identifies the selected real provider.
+- [x] Add dashboard copy that clearly identifies the selected real provider.
 - [ ] Run unit tests, build, and E2E private settlement test.
 - [ ] Commit with `feat: add real private settlement provider`.
+
+**Current blocker:** MagicBlock unsigned transaction building is wired. Wallet signing/submission and the private settlement E2E are deferred as the separate risky mini-task noted above.
 
 ### Task 6: QVAC Local Invoice Review
 
