@@ -50,6 +50,7 @@ GitHub URL:
 - Provider/API contract exists for opt-in `.sol` identity.
 - Live SNS resolver is fallback-only until a safe resolver dependency or API path is configured.
 - Removed the vulnerable `@bonfida/spl-name-service` dependency to keep the public repo free of critical/high audit findings.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- sns`: passed as part of Task 8 provider evidence.
 
 ## Provider Status Evidence
 
@@ -81,3 +82,24 @@ GitHub URL:
 - Release decision: PUSD remains a demo invoice denomination.
 - Private payment preparation uses USDC by default until an official `MAGICBLOCK_PUSD_MINT` value is confirmed.
 - VeilSettle does not claim live PUSD settlement in this release.
+
+## Dune SIM Evidence
+
+- Server-side Dune SIM adapter and redacted analytics route exist.
+- No live `DUNE_SIM_API_KEY` / wallet evidence was available in this session.
+- Current release evidence is unit/provider coverage plus static fallback behavior.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- dune`: passed as part of Task 8 provider evidence.
+
+## QVAC Evidence
+
+- Runtime: deterministic local fallback.
+- Private invoice text leaves local machine: no.
+- Checks shown in UI: risk score, duplicate signal, vendor consistency, suspicious terms, privacy note.
+- Submission claim: QVAC-compatible local review design, not full QVAC SDK runtime.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- qvac`: passed as part of Task 8 provider evidence.
+
+## RPC Evidence
+
+- No RPC Fast endpoint was configured or verified in this session.
+- Release claim: RPC Fast remains evidence-dependent, not a completed integration.
+- `SOLANA_RPC_URL` remains the server-side env hook for future Solana/SNS/RPC verification.

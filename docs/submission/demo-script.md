@@ -10,6 +10,6 @@
 8. Show authorized party sees amount and line items.
 9. Show public verification hides amount, line items, memo, attachments, and client context.
 10. Open settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics.
-11. Show SNS identity route/provider supports opt-in `.sol` resolution and reverse lookup.
+11. Show SNS provider/API contract for opt-in `.sol` identity; only claim live resolution if safe resolver evidence is added.
 12. State that PUSD is a demo denomination until official Solana mint/liquidity is confirmed.
 13. State that Supabase schema is included, while the submitted demo can run in local fallback mode unless live project evidence is added.
