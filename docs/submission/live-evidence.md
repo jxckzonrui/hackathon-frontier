@@ -56,3 +56,12 @@ GitHub URL:
 - Integration status aggregation now uses `getSettlementDataProvider().status()` for data integrations.
 - With `DUNE_SIM_API_KEY` and `DUNE_SIM_WALLET_ADDRESS` configured, the dashboard status reports `dune-sim-settlement-analytics` as `configured`.
 - `corepack.cmd pnpm --filter @veilsettle/web test -- provider-contracts`: passed, 1 test file and 6 tests.
+
+## Private Payment Preparation Evidence
+
+- Added `/api/privacy/payment` as the server route for private payment preparation through the configured provider.
+- `PaymentSettlementActions` calls the private payment route before storing a payment proof reference.
+- Demo mode still works without live Supabase; non-demo invoices store the provider proof reference through `/api/invoices/[id]/payment-proof`.
+- `corepack.cmd pnpm --filter @veilsettle/web test -- privacy payment-proof`: passed, 2 test files and 6 tests.
+- `corepack.cmd pnpm --filter @veilsettle/web test:e2e`: passed, 2 Playwright tests.
+- `corepack.cmd pnpm --filter @veilsettle/web build`: passed and includes `/api/privacy/payment`.

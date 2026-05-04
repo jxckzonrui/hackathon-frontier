@@ -8,6 +8,13 @@ type PaymentSettlementActionsProps = {
   invoiceId: string;
 };
 
+type PrivatePaymentResponse = {
+  error?: string;
+  paymentProofReference?: string;
+  transactionSignature?: string;
+  unsignedTransactionBase64?: string;
+};
+
 export function PaymentSettlementActions({ invoiceId }: PaymentSettlementActionsProps) {
   const [status, setStatus] = useState("Ready to prepare proof");
   const [isPreparing, setIsPreparing] = useState(false);
@@ -18,31 +25,53 @@ export function PaymentSettlementActions({ invoiceId }: PaymentSettlementActions
     setStatus("Preparing private payment proof...");
 
     try {
-      if (invoiceId === "demo-invoice") {
-        setIsPrepared(true);
-        setStatus("Payment proof prepared");
-        return;
-      }
-
-      const response = await fetch(`/api/invoices/${invoiceId}/payment-proof`, {
+      const paymentResponse = await fetch("/api/privacy/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          paymentProofReference: "cloak-proof-demo",
-          transactionSignature: "cloak-demo-signature",
-          paidAt: "2026-05-07T12:00:00.000Z",
-          dueDate: "2026-05-08",
+          invoiceId,
+          senderWallet: "Client111111111111111111111111111111111111",
+          recipientWallet: "Agency111111111111111111111111111111111111",
+          amountMinor: "2500000000",
+          currency: "USDC",
+          cluster: "devnet",
         }),
       });
-      const json = (await response.json()) as { error?: string; status?: string };
+      const paymentJson = (await paymentResponse.json()) as PrivatePaymentResponse;
 
-      if (!response.ok && json.error !== "Server configuration error") {
-        setStatus(json.error ?? "Payment proof failed");
+      if (!paymentResponse.ok || !paymentJson.paymentProofReference) {
+        setStatus(paymentJson.error ?? "Private payment preparation failed");
         return;
       }
 
+      if (invoiceId !== "demo-invoice") {
+        const response = await fetch(`/api/invoices/${invoiceId}/payment-proof`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentProofReference: paymentJson.paymentProofReference,
+            transactionSignature:
+              paymentJson.transactionSignature ??
+              paymentJson.unsignedTransactionBase64 ??
+              "unsigned-transaction-prepared",
+            paidAt: "2026-05-07T12:00:00.000Z",
+            dueDate: "2026-05-08",
+          }),
+        });
+        const json = (await response.json()) as { error?: string; status?: string };
+
+        if (!response.ok && json.error !== "Server configuration error") {
+          setStatus(json.error ?? "Payment proof failed");
+          return;
+        }
+      }
+
       setIsPrepared(true);
-      setStatus("Payment proof prepared");
+      setStatus(
+        paymentJson.transactionSignature
+          ? "Payment proof prepared"
+          : "Unsigned private payment prepared for wallet signing",
+      );
     } catch {
       setStatus("Payment proof failed");
     } finally {

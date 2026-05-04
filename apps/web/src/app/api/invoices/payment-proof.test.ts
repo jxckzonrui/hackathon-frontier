@@ -92,4 +92,28 @@ describe("payment proof API route", () => {
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({ error: "Server configuration error" });
   });
+
+  it("accepts unsigned private payment preparation as demo proof reference", async () => {
+    const { POST } = await import("./[id]/payment-proof/route");
+
+    const response = await POST(
+      new Request("http://localhost/api/invoices/invoice-1/payment-proof", {
+        method: "POST",
+        body: JSON.stringify({
+          paymentProofReference: "magicblock:invoice-1",
+          transactionSignature: "unsigned-transaction-prepared",
+          paidAt: "2026-05-07T12:00:00.000Z",
+          dueDate: "2026-05-08",
+        }),
+      }),
+      { params: Promise.resolve({ id: "invoice-1" }) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(updateMock).toHaveBeenCalledWith({
+      status: "paid",
+      payment_proof_reference: "magicblock:invoice-1",
+      paid_at: "2026-05-07T12:00:00.000Z",
+    });
+  });
 });

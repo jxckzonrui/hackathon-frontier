@@ -13,7 +13,9 @@ test("creates, settles, and verifies the demo invoice lifecycle", async ({ page 
   await expect(page.getByRole("heading", { name: "Review and pay" })).toBeVisible();
 
   await page.getByRole("button", { name: "Prepare private payment" }).click();
-  await expect(page.getByText("Payment proof prepared")).toBeVisible();
+  await expect(
+    page.getByText(/Payment proof prepared|Unsigned private payment prepared for wallet signing/),
+  ).toBeVisible();
 
   await page.getByRole("link", { name: "Verify settlement" }).click();
   const publicPanel = page.getByLabel("Public verification");
