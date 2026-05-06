@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { localInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
+import { getInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
 
 const invoiceDraftSchema = z.object({
   clientDisplay: z.string().min(1),
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid review payload" }, { status: 400 });
   }
 
-  const review = await localInvoiceReviewProvider.reviewInvoice(parsed.data);
+  const review = await getInvoiceReviewProvider().reviewInvoice(parsed.data);
 
   return NextResponse.json(review);
 }

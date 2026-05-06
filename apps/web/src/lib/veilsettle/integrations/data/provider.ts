@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { PublicKey } from "@solana/web3.js";
 import { fetchSettlementEvents, type SettlementEvent } from "../../analytics";
 import type { IntegrationProviderStatus } from "../status";
 
@@ -10,7 +11,7 @@ export type RedactedSettlementEvent = {
 };
 
 export type SettlementAnalytics = {
-  source: "static" | "dune-sim";
+  source: "static" | "dune-sim" | "rpc-fast";
   paidCount: number;
   events: RedactedSettlementEvent[];
   redacted: true;
@@ -36,6 +37,7 @@ type DuneSettlementDataProviderOptions = {
   settlementWallet?: string;
   fetcher?: Fetcher;
   apiUrl?: string;
+  rpcUrl?: string;
   limit?: number;
 };
 
@@ -67,53 +69,94 @@ async function fetchStaticSettlementAnalytics(): Promise<SettlementAnalytics> {
   };
 }
 
-function getTransactionSignature(transaction: unknown): string {
-  const record = transaction as {
-    raw_transaction?: {
-      transaction?: {
-        signatures?: unknown[];
-      };
-    };
-    block_slot?: unknown;
-  };
-  const signature = record.raw_transaction?.transaction?.signatures?.[0];
+function getSolanaPublicKey(address: string | undefined): PublicKey | null {
+  const trimmedAddress = address?.trim();
 
-  if (typeof signature === "string" && signature.length > 0) {
-    return signature;
+  if (!trimmedAddress) {
+    return null;
   }
 
-  return String(record.block_slot ?? "unknown-transaction");
+  try {
+    return new PublicKey(trimmedAddress);
+  } catch {
+    return null;
+  }
 }
 
-function getObservedAt(transaction: unknown): string {
-  const record = transaction as {
-    block_time?: unknown;
-    raw_transaction?: {
-      blockTime?: unknown;
-    };
-  };
-
-  if (typeof record.block_time === "number") {
-    return new Date(Math.floor(record.block_time / 1000)).toISOString();
-  }
-
-  if (typeof record.raw_transaction?.blockTime === "number") {
-    return new Date(record.raw_transaction.blockTime * 1000).toISOString();
-  }
-
-  return new Date(0).toISOString();
+function getDuneBalancesPath(wallet: PublicKey): string {
+  return `/beta/svm/balances/${encodeURIComponent(wallet.toBase58())}`;
 }
 
-function getSettlementStatus(transaction: unknown): SettlementEvent["status"] {
-  const record = transaction as {
-    raw_transaction?: {
-      meta?: {
-        err?: unknown;
-      };
+async function fetchRpcFastSettlementAnalytics(
+  fetcher: Fetcher,
+  rpcUrl: string | undefined,
+  wallet: PublicKey,
+): Promise<SettlementAnalytics> {
+  if (!rpcUrl) {
+    return fetchStaticSettlementAnalytics();
+  }
+
+  const response = await fetcher(rpcUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: "veilsettle-dune-fallback",
+      method: "getBalance",
+      params: [wallet.toBase58()],
+    }),
+  });
+
+  if (!response.ok) {
+    return fetchStaticSettlementAnalytics();
+  }
+
+  const payload = (await response.json()) as {
+    result?: {
+      value?: unknown;
     };
   };
+  const lamports = typeof payload.result?.value === "number" ? payload.result.value : 0;
+  const proofReference = `rpc:${redactedHash(`${wallet.toBase58()}:${lamports}`)}`;
 
-  return record.raw_transaction?.meta?.err ? "voided" : "paid";
+  return {
+    source: "rpc-fast",
+    paidCount: lamports > 0 ? 1 : 0,
+    events: [
+      {
+        invoiceHash: redactedHash(wallet.toBase58()),
+        status: lamports > 0 ? "paid" : "created",
+        paymentProofReference: proofReference,
+        observedAt: new Date(0).toISOString(),
+      },
+    ],
+    redacted: true,
+  };
+}
+
+function toDuneBalanceEvents(balances: unknown[], wallet: PublicKey): RedactedSettlementEvent[] {
+  return balances.map((balance, index) => {
+    const record = balance as {
+      chain?: unknown;
+      address?: unknown;
+      amount?: unknown;
+      balance?: unknown;
+    };
+    const chain = typeof record.chain === "string" ? record.chain : "solana";
+    const tokenAddress = typeof record.address === "string" ? record.address : `balance-${index}`;
+    const tokenAmount =
+      typeof record.amount === "string" || typeof record.amount === "number"
+        ? String(record.amount)
+        : String(record.balance ?? "0");
+    const reference = `${wallet.toBase58()}:${chain}:${tokenAddress}:${tokenAmount}`;
+
+    return {
+      invoiceHash: redactedHash(`${chain}:${tokenAddress}`),
+      status: tokenAmount !== "0" ? "paid" : "created",
+      paymentProofReference: `sim:${redactedHash(reference)}`,
+      observedAt: new Date(0).toISOString(),
+    };
+  });
 }
 
 export function createDuneSettlementDataProvider(
@@ -121,17 +164,19 @@ export function createDuneSettlementDataProvider(
 ): SettlementDataProvider {
   const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis);
   const apiUrl = (options.apiUrl ?? duneSimApiUrl).replace(/\/+$/, "");
-  const limit = options.limit ?? 20;
+  const limit = options.limit ?? 10;
 
   return {
     fetchSettlementEvents,
     async fetchSettlementAnalytics() {
-      if (!options.apiKey || !options.settlementWallet) {
+      const wallet = getSolanaPublicKey(options.settlementWallet);
+
+      if (!options.apiKey || !wallet) {
         return fetchStaticSettlementAnalytics();
       }
 
       const response = await fetcher(
-        `${apiUrl}/beta/svm/transactions/${encodeURIComponent(options.settlementWallet)}?limit=${limit}`,
+        `${apiUrl}${getDuneBalancesPath(wallet)}?chains=solana&limit=${limit}`,
         {
           method: "GET",
           headers: { "X-Sim-Api-Key": options.apiKey },
@@ -139,20 +184,11 @@ export function createDuneSettlementDataProvider(
       );
 
       if (!response.ok) {
-        throw new Error(`Dune SIM request failed with status ${response.status}`);
+        return fetchRpcFastSettlementAnalytics(fetcher, options.rpcUrl, wallet);
       }
 
-      const payload = (await response.json()) as { transactions?: unknown[] };
-      const events = (payload.transactions ?? []).map((transaction) => {
-        const signature = getTransactionSignature(transaction);
-
-        return {
-          invoiceHash: redactedHash(signature),
-          status: getSettlementStatus(transaction),
-          paymentProofReference: `sim:${redactedHash(signature)}`,
-          observedAt: getObservedAt(transaction),
-        };
-      });
+      const payload = (await response.json()) as { balances?: unknown[] };
+      const events = toDuneBalanceEvents(payload.balances ?? [], wallet);
 
       return {
         source: "dune-sim",
@@ -162,13 +198,15 @@ export function createDuneSettlementDataProvider(
       };
     },
     status() {
+      const wallet = getSolanaPublicKey(options.settlementWallet);
+
       return {
         category: "data",
         id: "dune-sim-settlement-analytics",
         label: "Dune SIM settlement analytics",
-        state: options.apiKey && options.settlementWallet ? "configured" : "fallback",
+        state: options.apiKey && wallet ? "configured" : "fallback",
         publicSafe: true,
-        detail: "Uses SVM transactions and returns hashed settlement identifiers only.",
+        detail: "Uses SVM balances with chains=solana and returns hashed settlement identifiers only.",
       };
     },
   };
@@ -194,6 +232,7 @@ export function getSettlementDataProvider(): SettlementDataProvider {
     return createDuneSettlementDataProvider({
       apiKey: process.env.DUNE_SIM_API_KEY,
       settlementWallet: process.env.DUNE_SIM_WALLET_ADDRESS,
+      rpcUrl: process.env.SOLANA_RPC_URL,
     });
   }
 

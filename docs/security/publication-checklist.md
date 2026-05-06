@@ -27,3 +27,7 @@ Before pushing or making the repository public:
 - 2026-05-04: Dependency audit has no critical/high advisories. One moderate Next/PostCSS advisory remains documented in `docs/submission/live-evidence.md`.
 - 2026-05-04: Secret scan matches were inspected and are placeholders, env names, tests, or docs warnings.
 - 2026-05-04: Public verification E2E keeps amount and private memo out of the public panel.
+- 2026-05-06: `apps/web/.env.local`, `.worktrees`, and `docs/superpowers` are ignored and not tracked.
+- 2026-05-06: High-confidence secret scan across tracked plus public-candidate untracked files found no Dune SIM keys, RPC Fast API-key URLs, JWT-like tokens, private keys, wallet keypair arrays, or known pasted key fragments.
+- 2026-05-06: Exact local `.env.local` values were checked against `HEAD` and all git history refs; no matches were found.
+- 2026-05-06: Web lint, unit tests, build, and Playwright E2E passed. Dependency audit still reports the known moderate PostCSS advisory through Next.js, with no high/critical advisory reported.

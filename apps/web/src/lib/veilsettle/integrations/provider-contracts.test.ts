@@ -188,7 +188,7 @@ describe("integration provider contracts", () => {
 
   it("reports Dune SIM status through the selected settlement data provider", () => {
     vi.stubEnv("DUNE_SIM_API_KEY", "test-dune-key");
-    vi.stubEnv("DUNE_SIM_WALLET_ADDRESS", "Wallet1111111111111111111111111111111111111");
+    vi.stubEnv("DUNE_SIM_WALLET_ADDRESS", "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U");
 
     const statuses = getIntegrationProviderStatuses();
 

@@ -1,0 +1,16 @@
+{
+  "plugins": [
+    "@qvac/sdk/llamacpp-completion/plugin"
+  ],
+  "serve": {
+    "models": {
+      "qvac-local-invoice-review": {
+        "model": "QWEN3_600M_INST_Q4",
+        "default": true,
+        "config": {
+          "ctx_size": 8192
+        }
+      }
+    }
+  }
+}

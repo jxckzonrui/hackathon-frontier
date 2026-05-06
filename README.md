@@ -25,9 +25,9 @@ It lets an agency create an encrypted invoice, gives the client a local review s
 Provider boundaries keep sponsor integrations isolated:
 
 - Privacy: MagicBlock/mock provider behind one private payment contract.
-- Data: Dune SIM or static fallback for redacted settlement analytics.
+- Data: Dune SIM SVM balances or RPC/static fallback for redacted settlement analytics.
 - Identity: SNS provider/API contract for opt-in `.sol` identity.
-- AI: QVAC-compatible deterministic local invoice review fallback.
+- AI: local QVAC OpenAI-compatible runtime adapter when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local invoice review fallback.
 
 ## Current Release Status
 
@@ -36,8 +36,8 @@ VeilSettle is submitted as a hackathon MVP for privacy-preserving stablecoin inv
 Verified in this release:
 
 - Encrypted invoice creation and public/private receipt separation.
-- Local invoice review with a QVAC-compatible deterministic fallback.
-- Dune SIM server adapter for redacted settlement analytics.
+- Local invoice review with either a localhost-only QVAC runtime adapter or a QVAC-compatible deterministic fallback.
+- Dune SIM server adapter for redacted SVM balance analytics.
 - SNS provider/API contract for opt-in `.sol` identity; live resolver evidence is pending.
 - MagicBlock Private Payments unsigned transaction preparation.
 
@@ -54,11 +54,13 @@ Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle doe
 - Main Colosseum Frontier: core product demo.
 - 100xDevs: usable Solana/Web3 MVP.
 - Adevar Labs: security statement, threat model, public/private receipt separation, audit posture.
-- Dune SIM: redacted settlement analytics adapter, live key evidence pending.
+- Dune SIM: redacted SVM balance analytics adapter with local HTTP 200 smoke evidence; deployment evidence pending.
 - SNS: opt-in identity provider/API contract, safe live resolver evidence pending.
-- QVAC: local invoice review flow with deterministic fallback.
+- Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
 - MagicBlock/privacy: unsigned private payment preparation; signing/submission deferred.
 - Palm USD: demo denomination only until official Solana mint/liquidity is confirmed.
+- GoldRush: optional only with live receipt/wallet enrichment evidence.
+- Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 
 RPC Fast remains evidence-dependent until a release endpoint is configured.
 
@@ -99,7 +101,21 @@ Keep real values in `.env.local` or deployment secrets only.
 - `MAGICBLOCK_PUSD_MINT`
 - `DUNE_SIM_API_KEY`
 - `DUNE_SIM_WALLET_ADDRESS`
+- `GOLDRUSH_API_KEY`
+- `QVAC_BASE_URL`
+- `QVAC_MODEL`
+- `TORQUE_API_KEY`
 - `TORQUE_API_TOKEN`
+
+QVAC local runtime setup:
+
+```powershell
+corepack.cmd pnpm --filter @veilsettle/web qvac:doctor
+corepack.cmd pnpm --filter @veilsettle/web qvac:prepare:windows
+corepack.cmd pnpm --filter @veilsettle/web qvac:serve:windows
+```
+
+On Windows, `qvac:serve:windows` runs QVAC from a short local runtime directory to avoid pnpm path-length issues in native Bare addons. When the local QVAC model is serving, set `QVAC_BASE_URL=http://127.0.0.1:11434/v1` and `QVAC_MODEL=qvac-local-invoice-review` in local env or deployment secrets. Do not set a cloud URL; non-local QVAC URLs are rejected.
 
 The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`, but live project migration is not claimed until the project migration and RLS checks are verified.
 
@@ -128,6 +144,7 @@ Only commit empty variable names in `apps/web/.env.example`. Keep real Supabase 
 See:
 
 - `docs/security/publication-checklist.md`
+- `docs/security/public-github-deployment.md`
 - `docs/submission/security-statement.md`
 - `docs/submission/live-evidence.md`
 

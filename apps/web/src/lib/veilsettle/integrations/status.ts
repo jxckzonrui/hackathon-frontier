@@ -1,4 +1,4 @@
-import { localInvoiceReviewProvider } from "./ai/provider";
+import { getInvoiceReviewProvider } from "./ai/provider";
 import { getSettlementDataProvider } from "./data/provider";
 import { torqueGrowthProvider } from "./growth/provider";
 import { optInSnsIdentityProvider } from "./identity/provider";
@@ -18,7 +18,7 @@ export type IntegrationProviderStatus = {
 export function getIntegrationProviderStatuses(): IntegrationProviderStatus[] {
   return [
     getPrivatePaymentProvider().status(),
-    localInvoiceReviewProvider.status(),
+    getInvoiceReviewProvider().status(),
     getSettlementDataProvider().status(),
     optInSnsIdentityProvider.status(),
     torqueGrowthProvider.status(),

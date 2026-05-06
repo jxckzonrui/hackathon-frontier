@@ -21,7 +21,7 @@ Known MVP limitations:
 - Wallet authentication is demo-grade and does not yet require signed wallet challenges for every invoice read.
 - Payment proof submission stores provider proof references but does not independently verify every onchain execution path.
 - Invoice encryption key recovery is demo-grade and not suitable for production account recovery.
-- MagicBlock signing/submission is claimed only if Task 6 succeeds.
+- MagicBlock signing/submission is not claimed in the safe release path; the current claim is unsigned private payment preparation only.
 
 MVP risks:
 
@@ -32,3 +32,4 @@ MVP risks:
 - Supabase service-role keys must never be exposed to the browser.
 - Dune SIM analytics returns hashed settlement identifiers only and must not expose raw invoice IDs, private memo, amount, line items, or client context.
 - SNS identity is opt-in; merchant/client `.sol` names should not be displayed where the user has not opted in.
+- QVAC runtime URLs must remain localhost/loopback only. Cloud QVAC URLs are rejected before private invoice content can leave the server.
