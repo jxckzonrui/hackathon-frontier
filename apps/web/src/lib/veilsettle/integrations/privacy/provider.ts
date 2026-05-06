@@ -63,6 +63,8 @@ const defaultMagicBlockMints: Partial<Record<StablecoinSymbol, string>> = {
   USDT: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkYkByTzW1C9S2da",
 };
 
+export const MAGICBLOCK_DEVNET_USDC_MINT = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
+
 function proofReference(provider: PrivatePaymentProviderId, invoiceId: string) {
   return `${provider}:${invoiceId}`;
 }
@@ -98,6 +100,32 @@ function amountMinorToNumber(amountMinor: string): number {
   }
 
   return amount;
+}
+
+function omitUndefinedMints(
+  mintByCurrency: Partial<Record<StablecoinSymbol, string>> = {},
+): Partial<Record<StablecoinSymbol, string>> {
+  return Object.fromEntries(
+    Object.entries(mintByCurrency).filter((entry): entry is [StablecoinSymbol, string] =>
+      Boolean(entry[1]),
+    ),
+  ) as Partial<Record<StablecoinSymbol, string>>;
+}
+
+function resolveMagicBlockMint(
+  request: PrivatePaymentRequest,
+  mintByCurrency: Partial<Record<StablecoinSymbol, string>>,
+  configuredMintByCurrency: Partial<Record<StablecoinSymbol, string>>,
+): string | undefined {
+  if (request.mint) {
+    return request.mint;
+  }
+
+  if (request.currency === "USDC" && request.cluster === "devnet") {
+    return configuredMintByCurrency.USDC ?? MAGICBLOCK_DEVNET_USDC_MINT;
+  }
+
+  return mintByCurrency[request.currency];
 }
 
 const mockPrivatePaymentProvider: PrivatePaymentProvider = {
@@ -163,9 +191,10 @@ export function createMagicBlockPrivatePaymentProvider(
 ): PrivatePaymentProvider {
   const apiUrl = (options.apiUrl ?? defaultMagicBlockApiUrl).replace(/\/+$/, "");
   const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis);
+  const configuredMintByCurrency = omitUndefinedMints(options.mintByCurrency);
   const mintByCurrency = {
     ...defaultMagicBlockMints,
-    ...options.mintByCurrency,
+    ...configuredMintByCurrency,
   };
 
   return {
@@ -179,7 +208,7 @@ export function createMagicBlockPrivatePaymentProvider(
       };
     },
     async preparePayment(request) {
-      const mint = request.mint ?? mintByCurrency[request.currency];
+      const mint = resolveMagicBlockMint(request, mintByCurrency, configuredMintByCurrency);
 
       if (!mint) {
         throw new Error(`Missing MagicBlock SPL mint for ${request.currency}`);
@@ -240,6 +269,7 @@ export function getPrivatePaymentProvider(): PrivatePaymentProvider {
     return createMagicBlockPrivatePaymentProvider({
       apiUrl: process.env.MAGICBLOCK_PAYMENTS_API_URL,
       mintByCurrency: {
+        USDC: process.env.MAGICBLOCK_USDC_MINT,
         PUSD: process.env.MAGICBLOCK_PUSD_MINT,
       },
     });

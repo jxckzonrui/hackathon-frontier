@@ -33,4 +33,6 @@ wallet*.json
 .worktrees
 agent.md
 documentation.md
+plan.md
+plan-ledger.md
 docs/superpowers

@@ -1,19 +1,20 @@
 # VeilSettle Live Evidence
 
 Date: 2026-05-06
-Branch: `codex/hackathon-readiness-check`
-Deployment URL: not yet published in repo
+Branch: `codex/veilsettle-release-ledger`
+Deployment URL: https://hackathon-frontier.vercel.app
 Demo video URL: not yet published in repo
-GitHub URL: not yet published in repo
+GitHub URL: https://github.com/mih249/hackathon-frontier
 
 ## Verification Commands
 
 | Check | Command | Result |
 |---|---|---|
 | Lint | `corepack.cmd pnpm --filter @veilsettle/web lint` | Passed on 2026-05-06, exit 0. |
-| Unit tests | `corepack.cmd pnpm --filter @veilsettle/web test` | Passed on 2026-05-06, 15 files and 61 tests. |
+| Unit tests | `corepack.cmd pnpm --filter @veilsettle/web test` | Passed on 2026-05-06 20:45 +03, 15 files and 62 tests. |
 | Build | `corepack.cmd pnpm --filter @veilsettle/web build` | Passed on 2026-05-06, exit 0. |
 | E2E | `corepack.cmd pnpm --filter @veilsettle/web test:e2e` | Passed on 2026-05-06, 2 Playwright tests. |
+| Production smoke | dashboard, new invoice, create invoice, pay page, payment proof, verify page, analytics | Passed on 2026-05-06 20:46 +03; smoke invoice `f3128c02-ffe0-42cb-b259-cfc6e554b5df`; analytics source `dune-sim`. |
 | Audit | `corepack.cmd pnpm audit --audit-level moderate` | Exit 1 from one documented moderate `postcss` advisory through Next/PostCSS; no critical/high advisories observed. |
 | Secret scan | local ignored env values checked against tracked `HEAD` | `TRACKED_SECRET_VALUE_LEAKS=NONE`; `apps/web/.env.local` is ignored. |
 
@@ -21,9 +22,9 @@ GitHub URL: not yet published in repo
 
 | Integration | Evidence | Claim |
 |---|---|---|
-| Supabase | Live project schema verified through Supabase MCP; `invoices` and `encrypted_invoice_blobs` exist with RLS enabled. | Live-backed schema/RLS evidence exists; app flow still needs deployed live create/read proof. |
-| MagicBlock | Provider prepares unsigned private SPL transfer payloads. | Unsigned private payment preparation only. |
-| Dune SIM | Server adapter uses the SVM/Solana balances endpoint with `chains=solana`; local key/wallet smoke returned HTTP 200. | Local live Dune SIM evidence exists; add deployment evidence before public submission claim. |
+| Supabase | Live project schema verified through Supabase MCP; `invoices` and `encrypted_invoice_blobs` exist with RLS enabled. Production smoke created an invoice and stored payment proof through the deployed app. | Live-backed schema/RLS and deployed create/proof write evidence exists. |
+| MagicBlock | Browser wallet signed and submitted a MagicBlock private SPL transfer on devnet; signature `4b6qjNPWff5sHzL9hUvAvWN4KLLJzi7G69NyTtLXLS9GfpmMvugf8UiGC5vRiCNu4GeM3fcsZZQKE8VRqryZ1zk6` finalized with `err=null`. | Signed/submitted MagicBlock devnet evidence exists for the browser-wallet flow. |
+| Dune SIM | Server adapter uses the SVM/Solana balances endpoint with `chains=solana`; local key/wallet smoke returned HTTP 200; production `/api/analytics/settlements` returned HTTP 200 with `source: "dune-sim"`. | Production Dune SIM analytics evidence exists for redacted settlement analytics. |
 | SNS | Provider/API contract and tests exist; safe wallet provided; resolver smoke pending. | Opt-in identity contract/fallback until live resolver evidence exists. |
 | QVAC | `@qvac/sdk` and `@qvac/cli` are installed; `qvac doctor` passes; OpenAI-compatible runtime setup is present; local model smoke returned HTTP 200. | Live local QVAC model evidence exists; app still keeps deterministic fallback when runtime is absent. |
 | PUSD | No official Solana SPL mint/liquidity source verified. | Demo denomination only. |
@@ -36,10 +37,10 @@ GitHub URL: not yet published in repo
 | Input | Status | Needed for |
 |---|---|---|
 | Colosseum project/submission access | missing | Colosseum Frontier submission. |
-| Public GitHub repository URL and push decision | missing | Public judging link and final release gate. |
-| Deployment target access, project name, and public URL | missing | Judge-visible demo, screenshots, video. |
-| `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` | missing | Live Supabase claim and RLS verification. |
-| `DUNE_SIM_API_KEY` and safe raw Solana `DUNE_SIM_WALLET_ADDRESS` | provided locally, balances smoke returned 200 | Deployment Dune SIM claim. |
+| Public GitHub repository URL and push decision | repo documented as `https://github.com/mih249/hackathon-frontier`; final push still must match final commit | Public judging link and final release gate. |
+| Deployment target access, project name, and public URL | production URL documented as `https://hackathon-frontier.vercel.app`; final deployment must match final commit | Judge-visible demo, screenshots, video. |
+| `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` | configured in Vercel according to final readiness checklist; values are not printed or committed | Live Supabase claim and RLS verification. |
+| `DUNE_SIM_API_KEY` and safe raw Solana `DUNE_SIM_WALLET_ADDRESS` | configured in Vercel according to final readiness checklist; production analytics smoke returned `source: "dune-sim"` | Deployment Dune SIM claim. |
 | RPC Fast `SOLANA_RPC_URL` | provided locally, verified | RPC Fast claim and Solana/SNS smoke evidence. |
 | Safe `.sol` name or wallet | provided locally | SNS live resolver evidence. |
 | QVAC local runtime/API/CLI details | SDK/CLI installed, doctor passed, model smoke returned 200 | Runtime-backed QVAC model claim. |
@@ -50,14 +51,14 @@ GitHub URL: not yet published in repo
 
 ## Supabase Evidence
 
-- Release mode: live schema/RLS verified, but deployed live app create/read proof is still pending.
+- Release mode: live schema/RLS verified, and production smoke confirmed deployed invoice create/payment proof write flow.
 - `apps/web/.env.example` includes empty `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` names.
 - `supabase/migrations/0001_veilsettle.sql` includes `invoices` and `encrypted_invoice_blobs`.
 - RLS is enabled in the migration for both invoice tables.
 - Supabase MCP project `fbggsyazebrtiwbcursq` has both public invoice tables present with RLS enabled.
 - Supabase advisors report informational `RLS Enabled No Policy` notices on both tables; this keeps browser/API table access closed until explicit policies are added.
 - `corepack.cmd pnpm --filter @veilsettle/web test -- storage`: passed, 1 test file and 5 tests.
-- Live deployment create/read proof was not captured in this task.
+- Production smoke flow captured deployed create/read/payment proof behavior in `docs/submission/final-readiness-checklist-2026-05-06.md`.
 
 ## Dependency Audit Evidence
 
@@ -92,13 +93,14 @@ GitHub URL: not yet published in repo
 ## MagicBlock Evidence
 
 - Provider: MagicBlock Private Payments when `PRIVACY_PROVIDER=magicblock`.
-- Current release claim: unsigned private SPL transfer preparation only.
+- Current release claim: browser-wallet signed and submitted MagicBlock private SPL transfer on devnet.
 - API response support: provider parses `transactionBase64`, `sendTo`, and `requiredSigners`.
-- Wallet signing: not verified in this environment.
-- Submission signature: not verified in this environment.
-- User approved attempting signing/submission with a test wallet and accepted dependency/audit risk; a separate mini-plan exists at `docs/superpowers/plans/2026-05-06-magicblock-signing-submission.md`.
-- Local `.env.local` remains on `PRIVACY_PROVIDER=mock` for the stable demo path until that mini-plan is executed.
-- Release decision: do not claim completed MagicBlock private payment settlement until wallet signing/submission and final signature capture are wired.
+- Browser-wallet signing: verified with wallet `AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U` on devnet.
+- Submission signature: `4b6qjNPWff5sHzL9hUvAvWN4KLLJzi7G69NyTtLXLS9GfpmMvugf8UiGC5vRiCNu4GeM3fcsZZQKE8VRqryZ1zk6`.
+- Devnet status: finalized, `err=null`, slot `460572346`, block time `2026-05-06 21:48:25 UTC`.
+- Devnet mint: MagicBlock documented devnet USDC `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU`.
+- Local `.env.local` is set to `PRIVACY_PROVIDER=magicblock` for the signed-flow demo and remains ignored.
+- Release decision: MagicBlock can be claimed as signed/submitted devnet browser-wallet flow, not production mainnet settlement.
 
 ## PUSD Evidence
 
@@ -138,7 +140,7 @@ GitHub URL: not yet published in repo
 
 - RPC Fast endpoint was configured in ignored local env and returned `getHealth=ok` in a JSON-RPC smoke test.
 - Dune SIM non-200 handling can use the same `SOLANA_RPC_URL` as a server-side `getBalance` fallback for the configured Solana wallet.
-- Release claim: local RPC Fast endpoint evidence exists; deployment evidence is pending.
+- Release claim: local RPC Fast endpoint evidence exists; submit RPC Fast only if the final deployed `SOLANA_RPC_URL` is confirmed as RPC Fast.
 - `SOLANA_RPC_URL` remains the server-side env hook for future Solana/SNS/RPC verification.
 
 ## Solana Program Evidence
@@ -152,7 +154,7 @@ GitHub URL: not yet published in repo
 
 ## Final Verification Evidence
 
-- `git status --short --branch --untracked-files=all`: working branch is `codex/hackathon-readiness-check` with the documented release-readiness edits pending commit.
+- `git status --short --branch --untracked-files=all`: working branch is `codex/veilsettle-release-ledger` with the documented release-readiness edits pending commit.
 - Docs claim scan: no unresolved placeholder markers; matches are explicit non-claims, track requirements, sources, or historical audit warnings.
 - Public/private receipt behavior: Playwright checks confirm public verification contains status/proof/commitments and does not expose amount or private memo.
 - Generated `apps/web/next-env.d.ts` build churn was reverted to the tracked route types import.

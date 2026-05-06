@@ -14,7 +14,7 @@ Open the client review page and show either `QVAC local runtime active` or `QVAC
 
 ## 1:45-2:40 Private Payment Preparation
 
-Click `Prepare private payment`. Explain that the app calls the server-side private payment provider route. For MagicBlock, this release prepares an unsigned private SPL transfer for wallet signing; completed signing/submission is not claimed unless separate live evidence is added.
+Click `Prepare private payment`. Explain that the deployed stable demo uses the mock provider for a public-safe proof write, while the MagicBlock provider path prepares an unsigned private SPL transfer for wallet signing. Completed MagicBlock signing/submission is not claimed unless separate transaction signature evidence is added.
 
 ## 2:40-3:25 Public Verification
 
@@ -22,7 +22,7 @@ Open the split verification page. Show that the authorized party can see the amo
 
 ## 3:25-4:10 Integrations
 
-Open the settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics. Show the integration status panel. Mention SNS as an opt-in identity provider/API contract; only claim live `.sol` resolution if safe resolver evidence has been added. Mention RPC Fast, GoldRush, Torque, and theMiracle only if their evidence is present in `live-evidence.md`.
+Open the settlement dashboard and show Dune SIM-backed redacted analytics if the deployed route reports `source: "dune-sim"`; otherwise call it a fallback. Show the integration status panel. Mention SNS as an opt-in identity provider/API contract; only claim live `.sol` resolution if safe resolver evidence has been added. Mention RPC Fast, GoldRush, Torque, and theMiracle only if their evidence is present in `live-evidence.md`.
 
 ## 4:10-4:45 Why It Matters
 

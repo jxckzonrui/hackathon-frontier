@@ -1,6 +1,28 @@
 import { EyeOff, FileCheck2, LockKeyhole, ReceiptText } from "lucide-react";
+import type { PublicInvoiceRow } from "@/lib/veilsettle/storage";
 
-export function PublicPrivateVerification() {
+const demoPublicInvoice: PublicInvoiceRow = {
+  id: "demo-invoice",
+  status: "paid",
+  metadata_hash: "4f9c7b18...a821",
+  amount_commitment: "90ad42fe...f112",
+  due_date_hash: "due-date-demo",
+  payment_proof_reference: "mock:demo-invoice",
+  created_at: "2026-05-02T00:00:00.000Z",
+  paid_at: "2026-05-07T12:00:00.000Z",
+};
+
+type PublicPrivateVerificationProps = {
+  publicInvoice?: PublicInvoiceRow | null;
+};
+
+function formatStatus(status: PublicInvoiceRow["status"]) {
+  return status.charAt(0).toUpperCase() + status.slice(1);
+}
+
+export function PublicPrivateVerification({ publicInvoice }: PublicPrivateVerificationProps) {
+  const invoice = publicInvoice ?? demoPublicInvoice;
+
   return (
     <section className="grid gap-5 lg:grid-cols-2">
       <article
@@ -39,21 +61,27 @@ export function PublicPrivateVerification() {
           </span>
           <div>
             <p className="text-sm font-medium text-slate-500">Public verification</p>
-            <h2 className="text-xl font-semibold text-slate-950">Paid</h2>
+            <h2 className="text-xl font-semibold text-slate-950">{formatStatus(invoice.status)}</h2>
           </div>
         </div>
         <dl className="mt-6 grid gap-4 text-sm">
           <div className="grid gap-1">
+            <dt className="text-slate-500">Invoice id</dt>
+            <dd className="break-all font-mono text-slate-800">{invoice.id}</dd>
+          </div>
+          <div className="grid gap-1">
             <dt className="text-slate-500">Metadata hash</dt>
-            <dd className="break-all font-mono text-slate-800">4f9c7b18...a821</dd>
+            <dd className="break-all font-mono text-slate-800">{invoice.metadata_hash}</dd>
           </div>
           <div className="grid gap-1">
             <dt className="text-slate-500">Amount commitment</dt>
-            <dd className="break-all font-mono text-slate-800">90ad42fe...f112</dd>
+            <dd className="break-all font-mono text-slate-800">{invoice.amount_commitment}</dd>
           </div>
           <div className="grid gap-1">
             <dt className="text-slate-500">Payment proof</dt>
-            <dd className="break-all font-mono text-slate-800">cloak-proof-demo</dd>
+            <dd className="break-all font-mono text-slate-800">
+              {invoice.payment_proof_reference ?? "not-settled"}
+            </dd>
           </div>
         </dl>
         <div className="mt-6 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-600">

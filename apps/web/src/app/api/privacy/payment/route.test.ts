@@ -60,6 +60,34 @@ describe("private payment preparation route", () => {
     expect(preparePaymentMock).toHaveBeenCalledWith(validPayload);
   });
 
+  it("accepts the MagicBlock devnet one-unit signed-flow payload", async () => {
+    const { POST } = await import("./route");
+
+    const response = await POST(
+      new Request("http://localhost/api/privacy/payment", {
+        method: "POST",
+        body: JSON.stringify({
+          invoiceId: "invoice-1",
+          senderWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+          recipientWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+          amountMinor: "1",
+          currency: "USDC",
+          cluster: "devnet",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(preparePaymentMock).toHaveBeenCalledWith({
+      invoiceId: "invoice-1",
+      senderWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+      recipientWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+      amountMinor: "1",
+      currency: "USDC",
+      cluster: "devnet",
+    });
+  });
+
   it("rejects invalid payloads", async () => {
     const { POST } = await import("./route");
 

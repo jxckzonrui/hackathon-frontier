@@ -6,6 +6,7 @@ import { torqueGrowthProvider } from "./growth/provider";
 import { optInSnsIdentityProvider } from "./identity/provider";
 import { getIntegrationProviderStatuses } from "./status";
 import {
+  MAGICBLOCK_DEVNET_USDC_MINT,
   createMagicBlockPrivatePaymentProvider,
   getPrivatePaymentProvider,
 } from "./privacy/provider";
@@ -126,6 +127,39 @@ describe("integration provider contracts", () => {
     });
     expect(JSON.stringify(result)).not.toContain(draft.memo);
     expect(JSON.stringify(result)).not.toContain(draft.amountMinor);
+  });
+
+  it("uses MagicBlock documented devnet USDC mint for devnet signed flow", async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          kind: "transfer",
+          version: "legacy",
+          transactionBase64: "base64-transaction",
+          sendTo: "base",
+          recentBlockhash: "blockhash",
+          lastValidBlockHeight: 123,
+          instructionCount: 1,
+          requiredSigners: ["AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U"],
+        }),
+    });
+    const provider = createMagicBlockPrivatePaymentProvider({ fetcher });
+
+    await provider.preparePayment({
+      invoiceId: "invoice-1",
+      senderWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+      recipientWallet: "AzPKxsnUT2N7Bso8Crvm6LNnXKUWyX5SHqtyMtk3GW2U",
+      amountMinor: "1",
+      currency: "USDC",
+      cluster: "devnet",
+    });
+
+    expect(JSON.parse(fetcher.mock.calls[0][1].body)).toMatchObject({
+      mint: MAGICBLOCK_DEVNET_USDC_MINT,
+      amount: 1,
+      cluster: "devnet",
+    });
   });
 
   it("exposes local invoice review through an AI provider boundary", async () => {

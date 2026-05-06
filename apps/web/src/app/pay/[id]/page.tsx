@@ -1,6 +1,12 @@
 import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { PaymentSettlementActions } from "@/components/PaymentSettlementActions";
 import { localInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
+import {
+  fetchPublicInvoiceRow,
+  getSupabaseServerClient,
+  type PublicInvoiceFetchClient,
+  type PublicInvoiceRow,
+} from "@/lib/veilsettle/storage";
 import type { InvoiceDraft } from "@/lib/veilsettle/types";
 
 const demoReviewDraft: InvoiceDraft = {
@@ -22,8 +28,23 @@ type PayInvoicePageProps = {
   params: Promise<{ id: string }>;
 };
 
+async function loadPublicInvoice(invoiceId: string): Promise<PublicInvoiceRow | null> {
+  if (invoiceId === "demo-invoice") {
+    return null;
+  }
+
+  try {
+    const supabase = getSupabaseServerClient() as unknown as PublicInvoiceFetchClient;
+
+    return await fetchPublicInvoiceRow(supabase, invoiceId);
+  } catch {
+    return null;
+  }
+}
+
 export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
   const { id } = await params;
+  const publicInvoice = await loadPublicInvoice(id);
   const review = await localInvoiceReviewProvider.reviewInvoice({
     draft: demoReviewDraft,
     knownAttachmentHashes: [],
@@ -44,11 +65,44 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
               <p className="mt-1 text-sm text-slate-600">
                 2,500.00 PUSD demo denomination due 2026-05-08
               </p>
+              {publicInvoice ? (
+                <p className="mt-2 text-xs font-medium text-slate-500">
+                  Loaded from Supabase public invoice row
+                </p>
+              ) : null}
             </div>
             <span className="grid size-10 place-items-center rounded-md bg-emerald-50 text-emerald-700">
               <LockKeyhole aria-hidden="true" className="size-5" />
             </span>
           </div>
+          {publicInvoice ? (
+            <dl className="mt-5 grid gap-3 border-t border-slate-100 pt-5 text-sm md:grid-cols-2">
+              <div className="grid gap-1">
+                <dt className="text-slate-500">Invoice id</dt>
+                <dd className="break-all font-mono text-slate-800">{publicInvoice.id}</dd>
+              </div>
+              <div className="grid gap-1">
+                <dt className="text-slate-500">Public status</dt>
+                <dd className="font-medium text-slate-950">{publicInvoice.status}</dd>
+              </div>
+              <div className="grid gap-1 md:col-span-2">
+                <dt className="text-slate-500">Metadata hash</dt>
+                <dd className="break-all font-mono text-slate-800">
+                  {publicInvoice.metadata_hash}
+                </dd>
+              </div>
+              <div className="grid gap-1 md:col-span-2">
+                <dt className="text-slate-500">Payment proof</dt>
+                <dd className="break-all font-mono text-slate-800">
+                  {publicInvoice.payment_proof_reference ?? "not-settled"}
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <p className="mt-5 border-t border-slate-100 pt-5 text-xs text-slate-500">
+              Demo fallback details are shown because no public Supabase invoice row was loaded.
+            </p>
+          )}
 
           <div className="mt-6 border-t border-slate-100 pt-5">
             <div className="flex items-center justify-between gap-4">
@@ -68,7 +122,7 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
             <p className="mt-3 text-xs text-slate-500">{review.privacyNote}</p>
           </div>
 
-          <PaymentSettlementActions invoiceId={id} />
+          <PaymentSettlementActions invoiceId={id} reviewCompleted={review.checks.length > 0} />
         </section>
       </div>
     </main>

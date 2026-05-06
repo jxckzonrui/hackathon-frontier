@@ -31,20 +31,26 @@ Provider boundaries keep sponsor integrations isolated:
 
 ## Current Release Status
 
-VeilSettle is submitted as a hackathon MVP for privacy-preserving stablecoin invoice settlement.
+VeilSettle is release-positioned as a hackathon MVP for privacy-preserving stablecoin invoice settlement.
+
+Current public surfaces:
+
+- Deployed app: https://hackathon-frontier.vercel.app
+- GitHub repository: https://github.com/mih249/hackathon-frontier
 
 Verified in this release:
 
 - Encrypted invoice creation and public/private receipt separation.
 - Local invoice review with either a localhost-only QVAC runtime adapter or a QVAC-compatible deterministic fallback.
-- Dune SIM server adapter for redacted SVM balance analytics.
+- Supabase-backed invoice creation and payment proof storage on the current Vercel deployment.
+- Dune SIM server adapter for redacted SVM balance analytics; the production route returns `source: "dune-sim"`.
 - SNS provider/API contract for opt-in `.sol` identity; live resolver evidence is pending.
-- MagicBlock Private Payments unsigned transaction preparation.
+- MagicBlock Private Payments browser-wallet signed devnet transaction submission.
 
 Not claimed as complete:
 
 - Live PUSD settlement until the official Solana mint/liquidity source is confirmed.
-- Completed MagicBlock private payments until wallet signing/submission is wired.
+- Production mainnet MagicBlock settlement; current evidence is devnet browser-wallet signing/submission.
 - Production-ready wallet auth, encryption key recovery, or onchain proof verification.
 
 Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle does not claim live PUSD settlement until the official Solana SPL mint and liquidity path are confirmed.
@@ -54,15 +60,15 @@ Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle doe
 - Main Colosseum Frontier: core product demo.
 - 100xDevs: usable Solana/Web3 MVP.
 - Adevar Labs: security statement, threat model, public/private receipt separation, audit posture.
-- Dune SIM: redacted SVM balance analytics adapter with local HTTP 200 smoke evidence; deployment evidence pending.
+- Dune SIM: redacted SVM balance analytics adapter with production HTTP 200 smoke evidence.
 - SNS: opt-in identity provider/API contract, safe live resolver evidence pending.
 - Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
-- MagicBlock/privacy: unsigned private payment preparation; signing/submission deferred.
+- MagicBlock/privacy: signed/submitted devnet browser-wallet flow; no production mainnet settlement claim.
 - Palm USD: demo denomination only until official Solana mint/liquidity is confirmed.
 - GoldRush: optional only with live receipt/wallet enrichment evidence.
 - Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 
-RPC Fast remains evidence-dependent until a release endpoint is configured.
+RPC Fast remains evidence-dependent unless the submitted environment is proven to use the sponsor endpoint.
 
 ## Setup
 
@@ -117,7 +123,7 @@ corepack.cmd pnpm --filter @veilsettle/web qvac:serve:windows
 
 On Windows, `qvac:serve:windows` runs QVAC from a short local runtime directory to avoid pnpm path-length issues in native Bare addons. When the local QVAC model is serving, set `QVAC_BASE_URL=http://127.0.0.1:11434/v1` and `QVAC_MODEL=qvac-local-invoice-review` in local env or deployment secrets. Do not set a cloud URL; non-local QVAC URLs are rejected.
 
-The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`, but live project migration is not claimed until the project migration and RLS checks are verified.
+The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`; current release evidence documents the live schema/RLS check and deployed create/payment proof smoke.
 
 ## Verification
 
@@ -150,8 +156,8 @@ See:
 
 ## Submission Links
 
-- Deployed app: not yet published in repo.
+- Deployed app: https://hackathon-frontier.vercel.app
 - Demo video: not yet published in repo.
-- GitHub repository: not yet published in repo.
+- GitHub repository: https://github.com/mih249/hackathon-frontier
 - Colosseum project: not yet published in repo.
 - Superteam submissions: not yet published in repo.

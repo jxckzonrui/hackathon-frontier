@@ -48,7 +48,7 @@ type BlobInsertClient = {
   };
 };
 
-type PublicInvoiceFetchClient = {
+export type PublicInvoiceFetchClient = {
   from(table: "invoices"): {
     select(columns: string): {
       eq(column: "id", value: string): {
