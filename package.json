@@ -1,0 +1,12 @@
+{
+  "name": "veilsettle",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @veilsettle/web dev",
+    "build": "pnpm --filter @veilsettle/web build",
+    "test": "pnpm --filter @veilsettle/web test",
+    "test:e2e": "pnpm --filter @veilsettle/web test:e2e",
+    "anchor:test": "cd programs/veilsettle && anchor test"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

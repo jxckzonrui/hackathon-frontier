@@ -1,0 +1,21 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+veilsettle = "5gMe3BAjnC5WrQuMyw2hcX6KfUssZu1Dqaoa5WnswTja"
+
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "npm run test:anchor"
+
+[test]
+startup_wait = 30000
+
+[hooks]
