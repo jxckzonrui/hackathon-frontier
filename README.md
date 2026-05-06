@@ -10,8 +10,8 @@ It lets an agency create an encrypted invoice, gives the client a local review s
 
 1. Agency opens the dashboard and creates a protocol audit sprint invoice.
 2. Private invoice details stay in the authorized flow.
-3. Client reviews local QVAC-compatible checks.
-4. The app prepares a private payment through the configured provider route.
+3. Client reviews local QVAC-compatible checks and the Local Invoice Agent decision.
+4. The app prepares a private payment through the configured provider route only after local review.
 5. Public verification shows settlement status, hashes, and proof reference without amount, memo, line items, attachments, or client context.
 
 ## Architecture
@@ -26,8 +26,8 @@ Provider boundaries keep sponsor integrations isolated:
 
 - Privacy: MagicBlock/mock provider behind one private payment contract.
 - Data: Dune SIM SVM balances or RPC/static fallback for redacted settlement analytics.
-- Identity: SNS provider/API contract for opt-in `.sol` identity.
-- AI: local QVAC OpenAI-compatible runtime adapter when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local invoice review fallback.
+- Identity: SNS opt-in `.sol` identity through the configured Solana/SNS RPC path when available.
+- AI: Local Invoice Agent over a local QVAC OpenAI-compatible runtime when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local review fallback.
 
 ## Current Release Status
 
@@ -42,9 +42,10 @@ Verified in this release:
 
 - Encrypted invoice creation and public/private receipt separation.
 - Local invoice review with either a localhost-only QVAC runtime adapter or a QVAC-compatible deterministic fallback.
+- Local Invoice Agent that turns local review signals into approve/review/reject decisions before payment preparation.
 - Supabase-backed invoice creation and payment proof storage on the current Vercel deployment.
 - Dune SIM server adapter for redacted SVM balance analytics; the production route returns `source: "dune-sim"`.
-- SNS provider/API contract for opt-in `.sol` identity; live resolver evidence is pending.
+- SNS resolver path for opt-in `.sol` identity through the configured Solana/SNS RPC endpoint; fallback stays explicit when unsupported.
 - MagicBlock Private Payments browser-wallet signed devnet transaction submission.
 
 Not claimed as complete:
@@ -61,14 +62,14 @@ Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle doe
 - 100xDevs: usable Solana/Web3 MVP.
 - Adevar Labs: security statement, threat model, public/private receipt separation, audit posture.
 - Dune SIM: redacted SVM balance analytics adapter with production HTTP 200 smoke evidence.
-- SNS: opt-in identity provider/API contract, safe live resolver evidence pending.
+- SNS: opt-in identity resolver/fallback, never exposed on public receipt without opt-in.
 - Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
 - MagicBlock/privacy: signed/submitted devnet browser-wallet flow; no production mainnet settlement claim.
 - Palm USD: demo denomination only until official Solana mint/liquidity is confirmed.
 - GoldRush: optional only with live receipt/wallet enrichment evidence.
 - Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 
-RPC Fast remains evidence-dependent unless the submitted environment is proven to use the sponsor endpoint.
+RPC Fast remains evidence-dependent unless the submitted environment is proven to use the sponsor endpoint; `/api/status/rpc` returns redacted health evidence without exposing private endpoint URLs.
 
 ## Setup
 

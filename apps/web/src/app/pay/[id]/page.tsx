@@ -1,6 +1,8 @@
 import { LockKeyhole, ShieldCheck } from "lucide-react";
 import { PaymentSettlementActions } from "@/components/PaymentSettlementActions";
+import { createLocalInvoiceAgentReview } from "@/lib/veilsettle/integrations/ai/local-agent";
 import { localInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
+import { getSnsIdentityProvider } from "@/lib/veilsettle/integrations/identity/provider";
 import {
   fetchPublicInvoiceRow,
   getSupabaseServerClient,
@@ -48,6 +50,12 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
   const review = await localInvoiceReviewProvider.reviewInvoice({
     draft: demoReviewDraft,
     knownAttachmentHashes: [],
+  });
+  const agentReview = createLocalInvoiceAgentReview(review);
+  const merchantIdentity = await getSnsIdentityProvider().displayIdentity({
+    name: demoReviewDraft.clientDisplay,
+    wallet: demoReviewDraft.clientWallet,
+    optIn: true,
   });
 
   return (
@@ -122,7 +130,43 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
             <p className="mt-3 text-xs text-slate-500">{review.privacyNote}</p>
           </div>
 
-          <PaymentSettlementActions invoiceId={id} reviewCompleted={review.checks.length > 0} />
+          <div className="mt-6 border-t border-slate-100 pt-5" aria-label="Invoice Review Agent">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Invoice Review Agent</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {agentReview.decision} / {agentReview.recommendedAction}
+                </p>
+              </div>
+              <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                {agentReview.agentMode}
+              </span>
+            </div>
+            <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+              <div>
+                <dt className="text-slate-500">Merchant trust</dt>
+                <dd className="font-medium text-slate-900">{merchantIdentity}</dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">Agent risk score</dt>
+                <dd className="font-medium text-slate-900">{agentReview.riskScore}</dd>
+              </div>
+            </dl>
+            <ul className="mt-3 grid gap-3">
+              {agentReview.findings.map((finding) => (
+                <li className="flex items-center gap-2 text-sm text-slate-700" key={finding}>
+                  <ShieldCheck aria-hidden="true" className="size-4 text-slate-600" />
+                  {finding}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-slate-500">{agentReview.privacyNotice}</p>
+          </div>
+
+          <PaymentSettlementActions
+            invoiceId={id}
+            reviewCompleted={agentReview.recommendedAction === "prepare-private-payment"}
+          />
         </section>
       </div>
     </main>

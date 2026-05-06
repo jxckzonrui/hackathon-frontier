@@ -25,10 +25,10 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 | Supabase | Live project schema verified through Supabase MCP; `invoices` and `encrypted_invoice_blobs` exist with RLS enabled. Production smoke created an invoice and stored payment proof through the deployed app. | Live-backed schema/RLS and deployed create/proof write evidence exists. |
 | MagicBlock | Browser wallet signed and submitted a MagicBlock private SPL transfer on devnet; signature `4b6qjNPWff5sHzL9hUvAvWN4KLLJzi7G69NyTtLXLS9GfpmMvugf8UiGC5vRiCNu4GeM3fcsZZQKE8VRqryZ1zk6` finalized with `err=null`. | Signed/submitted MagicBlock devnet evidence exists for the browser-wallet flow. |
 | Dune SIM | Server adapter uses the SVM/Solana balances endpoint with `chains=solana`; local key/wallet smoke returned HTTP 200; production `/api/analytics/settlements` returned HTTP 200 with `source: "dune-sim"`. | Production Dune SIM analytics evidence exists for redacted settlement analytics. |
-| SNS | Provider/API contract and tests exist; safe wallet provided; resolver smoke pending. | Opt-in identity contract/fallback until live resolver evidence exists. |
-| QVAC | `@qvac/sdk` and `@qvac/cli` are installed; `qvac doctor` passes; OpenAI-compatible runtime setup is present; local model smoke returned HTTP 200. | Live local QVAC model evidence exists; app still keeps deterministic fallback when runtime is absent. |
+| SNS | Provider/API contract and tests exist; resolver uses the configured Solana/SNS RPC path when supported and falls back safely when unsupported. | Opt-in identity resolver/fallback; live claim requires `/api/identity/sns` smoke evidence. |
+| QVAC / Local Agent | `@qvac/sdk` and `@qvac/cli` are installed; local model smoke returned HTTP 200; Local Invoice Agent converts local review signals into approve/review/reject decisions. | Live local QVAC model evidence exists; app still keeps deterministic fallback when runtime is absent. |
 | PUSD | No official Solana SPL mint/liquidity source verified. | Demo denomination only. |
-| RPC Fast | Provided `SOLANA_RPC_URL` returned `getHealth=ok` in local smoke. | Endpoint evidence exists locally; add deployment evidence before public submission claim. |
+| RPC Fast | `/api/status/rpc` returns redacted provider/health/evidence without exposing private endpoint URLs. | Submit RPC Fast only if final deployed status reports `provider: "rpc-fast"` and `getHealth=ok`. |
 | GoldRush | Env hook exists; live endpoint evidence pending. | Optional, not claimed. |
 | Torque or theMiracle | Env hook/story path only; evidence pending. | Optional, not claimed. |
 
@@ -67,12 +67,27 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 - Current `corepack.cmd pnpm audit --audit-level moderate` status: no critical or high advisories remain.
 - Remaining moderate advisory: `postcss <8.5.10` through `next@16.2.4 -> postcss@8.4.31`. Mitigation for hackathon release: no user-supplied CSS stringification path is exposed by VeilSettle; keep Next.js patched when an upstream release updates the transitive PostCSS version.
 
+## Local Invoice Agent Evidence
+
+- Local Invoice Agent is local-only by default and does not require DeepSeek, OpenAI, or any paid cloud model.
+- Agent mode values: `qvac-local-runtime-agent`, `qvac-local-fallback-agent`, or `local-deterministic-agent`.
+- Agent decision values: `approve`, `review`, or `reject`.
+- Agent recommended actions: `prepare-private-payment`, `request-changes`, or `block-payment`.
+- Agent output is redacted and excludes amount, memo, line items, attachment hash, client wallet, and client display.
+- Targeted tests:
+  - `corepack.cmd pnpm --filter @veilsettle/web test -- src/lib/veilsettle/integrations/ai/local-agent.test.ts src/app/api/invoices/review/agent/route.test.ts`.
+
 ## SNS Evidence
 
 - Provider/API contract exists for opt-in `.sol` identity.
-- Live SNS resolver is fallback-only until a safe resolver dependency or API path is configured.
-- Removed the vulnerable `@bonfida/spl-name-service` dependency to keep the public repo free of critical/high audit findings.
-- `corepack.cmd pnpm --filter @veilsettle/web test -- sns`: passed as part of Task 8 provider evidence.
+- Resolver uses official SNS Quicknode JSON-RPC methods through the configured Solana/SNS RPC endpoint when supported:
+  - `sns_resolveDomain`;
+  - `sns_reverseLookup`.
+- The resolver remains fallback-safe when the endpoint does not support SNS methods.
+- No SNS identity is shown on public receipts without opt-in.
+- `@bonfida/spl-name-service` is not required in this release; this avoids the prior vulnerable dependency path.
+- Targeted test:
+  - `corepack.cmd pnpm --filter @veilsettle/web test -- src/lib/veilsettle/integrations/identity/sns.test.ts`.
 
 ## Provider Status Evidence
 
@@ -140,8 +155,11 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 
 - RPC Fast endpoint was configured in ignored local env and returned `getHealth=ok` in a JSON-RPC smoke test.
 - Dune SIM non-200 handling can use the same `SOLANA_RPC_URL` as a server-side `getBalance` fallback for the configured Solana wallet.
-- Release claim: local RPC Fast endpoint evidence exists; submit RPC Fast only if the final deployed `SOLANA_RPC_URL` is confirmed as RPC Fast.
+- `/api/status/rpc` checks `getHealth` and returns only redacted status: provider classification, health, claimability, and evidence string.
+- Release claim: submit RPC Fast only if the final deployed `SOLANA_RPC_URL` is confirmed as RPC Fast and `/api/status/rpc` returns `getHealth=ok`.
 - `SOLANA_RPC_URL` remains the server-side env hook for future Solana/SNS/RPC verification.
+- Targeted test:
+  - `corepack.cmd pnpm --filter @veilsettle/web test -- src/lib/veilsettle/integrations/data/rpc.test.ts`.
 
 ## Solana Program Evidence
 

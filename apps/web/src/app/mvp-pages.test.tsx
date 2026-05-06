@@ -100,6 +100,8 @@ describe("VeilSettle MVP pages", () => {
     const { rerender } = render(payInvoicePage);
     expect(screen.getByRole("heading", { name: /review and pay/i })).toBeVisible();
     expect(screen.getByText(/qvac local checks/i)).toBeVisible();
+    expect(screen.getByLabelText(/invoice review agent/i)).toBeVisible();
+    expect(screen.getByText(/prepare-private-payment/i)).toBeVisible();
     expect(screen.getByRole("button", { name: /prepare private payment/i })).toBeVisible();
 
     const settlementsPage = await SettlementsPage();

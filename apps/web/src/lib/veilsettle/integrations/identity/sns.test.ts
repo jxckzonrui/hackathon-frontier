@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createSnsIdentityProvider } from "./provider";
+import { createSnsIdentityProvider, createSnsSdkResolver } from "./provider";
 
 const wallet = "Client111111111111111111111111111111111111";
 
@@ -47,5 +47,35 @@ describe("SNS identity provider", () => {
         state: "fallback",
       }),
     );
+  });
+
+  it("creates a safe SNS SDK resolver from injectable SDK functions", async () => {
+    const resolver = createSnsSdkResolver({
+      rpcUrl: "https://api.devnet.solana.com",
+      resolveDomain: async ({ domain }) => (domain === "client.sol" ? wallet : null),
+      reverseLookup: async ({ wallet: requestedWallet }) =>
+        requestedWallet === wallet ? "client.sol" : null,
+    });
+    const provider = createSnsIdentityProvider(resolver);
+
+    await expect(provider.resolveName("client.sol")).resolves.toBe(wallet);
+    await expect(provider.reverseLookup(wallet)).resolves.toBe("client.sol");
+    expect(provider.status()).toMatchObject({
+      state: "configured",
+    });
+  });
+
+  it("hides opted-in names when the resolver wallet mismatches", async () => {
+    const provider = createSnsIdentityProvider({
+      resolveDomain: async () => "Different1111111111111111111111111111111111",
+    });
+
+    await expect(
+      provider.displayIdentity({
+        name: "client.sol",
+        wallet,
+        optIn: true,
+      }),
+    ).resolves.toBe("Clie...1111");
   });
 });

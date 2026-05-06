@@ -10,11 +10,11 @@ Show the agency dashboard, open the new invoice flow, and create the protocol au
 
 ## 1:10-1:45 Local Review
 
-Open the client review page and show either `QVAC local runtime active` or `QVAC-compatible local fallback`: risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note. Say that private invoice content is never sent to cloud review APIs; `QVAC_BASE_URL` is accepted only for localhost/loopback runtimes. If a real QVAC model is not serving on the local OpenAI-compatible `/v1/chat/completions` endpoint, describe this as fallback mode.
+Open the client review page and show either `QVAC local runtime active` or `QVAC-compatible local fallback`: risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note. Then show the Local Invoice Agent panel: approve/review/reject decision, findings, recommended action, and privacy notice. Say that private invoice content is never sent to cloud review APIs; `QVAC_BASE_URL` is accepted only for localhost/loopback runtimes. If a real QVAC model is not serving on the local OpenAI-compatible `/v1/chat/completions` endpoint, describe this as fallback mode.
 
 ## 1:45-2:40 Private Payment Preparation
 
-Click `Prepare private payment`. Explain that the deployed stable demo uses the mock provider for a public-safe proof write, while the MagicBlock provider path prepares an unsigned private SPL transfer for wallet signing. Completed MagicBlock signing/submission is not claimed unless separate transaction signature evidence is added.
+Click `Prepare private payment`. Explain that payment preparation is gated by the Local Invoice Agent recommendation. The deployed stable demo may use the mock provider for a public-safe proof write, while the MagicBlock provider path signs and submits a devnet private SPL transfer through the browser wallet when MagicBlock env is configured. Claim MagicBlock only as signed/submitted devnet evidence, not production mainnet settlement.
 
 ## 2:40-3:25 Public Verification
 
@@ -22,7 +22,7 @@ Open the split verification page. Show that the authorized party can see the amo
 
 ## 3:25-4:10 Integrations
 
-Open the settlement dashboard and show Dune SIM-backed redacted analytics if the deployed route reports `source: "dune-sim"`; otherwise call it a fallback. Show the integration status panel. Mention SNS as an opt-in identity provider/API contract; only claim live `.sol` resolution if safe resolver evidence has been added. Mention RPC Fast, GoldRush, Torque, and theMiracle only if their evidence is present in `live-evidence.md`.
+Open the settlement dashboard and show Dune SIM-backed redacted analytics if the deployed route reports `source: "dune-sim"`; otherwise call it a fallback. Show the integration status panel. Mention SNS as an opt-in identity resolver/fallback and only claim live `.sol` resolution when `/api/identity/sns` evidence succeeds. Mention RPC Fast only if `/api/status/rpc` reports `provider: "rpc-fast"` with `getHealth=ok`. Do not mention GoldRush, Torque, or theMiracle unless their evidence is present in `live-evidence.md`.
 
 ## 4:10-4:45 Why It Matters
 
