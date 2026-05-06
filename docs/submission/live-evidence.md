@@ -15,7 +15,7 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 | Build | `corepack.cmd pnpm --filter @veilsettle/web build` | Passed on 2026-05-06, exit 0. |
 | E2E | `corepack.cmd pnpm --filter @veilsettle/web test:e2e` | Passed on 2026-05-06, 2 Playwright tests. |
 | Production smoke | dashboard, new invoice, create invoice, pay page, payment proof, verify page, analytics | Passed on 2026-05-06 20:46 +03; smoke invoice `f3128c02-ffe0-42cb-b259-cfc6e554b5df`; analytics source `dune-sim`. |
-| Final production smoke | dashboard, pay page, RPC status, analytics | Passed on 2026-05-07 after promoting deployment `hackathon-frontier-boans2gv3-mih249s-projects.vercel.app` to production; production `/api/status/rpc` returned `provider: "rpc-fast"`, `healthy: true`, `claimable: true`, `evidence: "getHealth=ok"`; production analytics returned `source: "dune-sim"`. |
+| Final production smoke | dashboard, pay page, RPC status, analytics | Passed on 2026-05-07 against `https://hackathon-frontier.vercel.app`; production `/api/status/rpc` returned `provider: "rpc-fast"`, `healthy: true`, `claimable: true`, `evidence: "getHealth=ok"`; production analytics returned `source: "dune-sim"`. |
 | Audit | `corepack.cmd pnpm audit --audit-level moderate` | Exit 1 from one documented moderate `postcss` advisory through Next/PostCSS; no critical/high advisories observed. |
 | Secret scan | local ignored env values checked against tracked `HEAD` | `TRACKED_SECRET_VALUE_LEAKS=NONE`; `apps/web/.env.local` is ignored. |
 
