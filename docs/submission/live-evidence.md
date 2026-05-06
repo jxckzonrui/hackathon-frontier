@@ -15,6 +15,7 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 | Build | `corepack.cmd pnpm --filter @veilsettle/web build` | Passed on 2026-05-06, exit 0. |
 | E2E | `corepack.cmd pnpm --filter @veilsettle/web test:e2e` | Passed on 2026-05-06, 2 Playwright tests. |
 | Production smoke | dashboard, new invoice, create invoice, pay page, payment proof, verify page, analytics | Passed on 2026-05-06 20:46 +03; smoke invoice `f3128c02-ffe0-42cb-b259-cfc6e554b5df`; analytics source `dune-sim`. |
+| Final production smoke | dashboard, pay page, RPC status, analytics | Passed on 2026-05-07 after promoting deployment `hackathon-frontier-boans2gv3-mih249s-projects.vercel.app` to production; production `/api/status/rpc` returned `provider: "rpc-fast"`, `healthy: true`, `claimable: true`, `evidence: "getHealth=ok"`; production analytics returned `source: "dune-sim"`. |
 | Audit | `corepack.cmd pnpm audit --audit-level moderate` | Exit 1 from one documented moderate `postcss` advisory through Next/PostCSS; no critical/high advisories observed. |
 | Secret scan | local ignored env values checked against tracked `HEAD` | `TRACKED_SECRET_VALUE_LEAKS=NONE`; `apps/web/.env.local` is ignored. |
 
@@ -28,7 +29,7 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 | SNS | Provider/API contract and tests exist; resolver uses the configured Solana/SNS RPC path when supported and falls back safely when unsupported. | Opt-in identity resolver/fallback; live claim requires `/api/identity/sns` smoke evidence. |
 | QVAC / Local Agent | `@qvac/sdk` and `@qvac/cli` are installed; local model smoke returned HTTP 200; Local Invoice Agent converts local review signals into approve/review/reject decisions. | Live local QVAC model evidence exists; app still keeps deterministic fallback when runtime is absent. |
 | PUSD | No official Solana SPL mint/liquidity source verified. | Demo denomination only. |
-| RPC Fast | `/api/status/rpc` returns redacted provider/health/evidence without exposing private endpoint URLs. | Submit RPC Fast only if final deployed status reports `provider: "rpc-fast"` and `getHealth=ok`. |
+| RPC Fast | Production `/api/status/rpc` returns redacted provider/health/evidence without exposing private endpoint URLs. | RPC Fast production proof exists: `provider: "rpc-fast"`, `healthy: true`, `claimable: true`, `evidence: "getHealth=ok"`. |
 | GoldRush | Env hook exists; live endpoint evidence pending. | Optional, not claimed. |
 | Torque or theMiracle | Env hook/story path only; evidence pending. | Optional, not claimed. |
 
@@ -156,10 +157,19 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 - RPC Fast endpoint was configured in ignored local env and returned `getHealth=ok` in a JSON-RPC smoke test.
 - Dune SIM non-200 handling can use the same `SOLANA_RPC_URL` as a server-side `getBalance` fallback for the configured Solana wallet.
 - `/api/status/rpc` checks `getHealth` and returns only redacted status: provider classification, health, claimability, and evidence string.
-- Release claim: submit RPC Fast only if the final deployed `SOLANA_RPC_URL` is confirmed as RPC Fast and `/api/status/rpc` returns `getHealth=ok`.
+- Production evidence on 2026-05-07: `/api/status/rpc` returned `{"provider":"rpc-fast","healthy":true,"claimable":true,"evidence":"getHealth=ok","endpointPublic":false}`.
+- Release claim: RPC Fast can be submitted with this production proof.
 - `SOLANA_RPC_URL` remains the server-side env hook for future Solana/SNS/RPC verification.
 - Targeted test:
   - `corepack.cmd pnpm --filter @veilsettle/web test -- src/lib/veilsettle/integrations/data/rpc.test.ts`.
+
+## Screenshot Evidence
+
+- `docs/submission/screenshots/dashboard.png`
+- `docs/submission/screenshots/invoice-new.png`
+- `docs/submission/screenshots/pay-agent-review.png`
+- `docs/submission/screenshots/verify-public.png`
+- `docs/submission/screenshots/settlements.png`
 
 ## Solana Program Evidence
 
