@@ -3,6 +3,7 @@
 import { Loader2, ReceiptText, WalletCards } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { ClickSpark } from "./ClickSpark";
 
 type PaymentSettlementActionsProps = {
   invoiceId: string;
@@ -193,19 +194,21 @@ export function PaymentSettlementActions({
 
   return (
     <div className="mt-6 border-t border-slate-100 pt-5">
-      <button
-        className="inline-flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-400"
-        disabled={isPreparing || !reviewCompleted}
-        onClick={preparePaymentProof}
-        type="button"
-      >
-        {isPreparing ? (
-          <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-        ) : (
-          <WalletCards aria-hidden="true" className="size-4" />
-        )}
-        Prepare private payment
-      </button>
+      <ClickSpark sparkColor="#19b98d" sparkRadius={22} sparkSize={9}>
+        <button
+          className="inline-flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          disabled={isPreparing || !reviewCompleted}
+          onClick={preparePaymentProof}
+          type="button"
+        >
+          {isPreparing ? (
+            <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+          ) : (
+            <WalletCards aria-hidden="true" className="size-4" />
+          )}
+          Prepare private payment
+        </button>
+      </ClickSpark>
       <p className="mt-3 min-h-5 text-sm text-slate-600">{status}</p>
       {isPrepared ? (
         <Link
