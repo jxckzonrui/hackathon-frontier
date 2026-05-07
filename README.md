@@ -24,7 +24,7 @@ It lets an agency create an encrypted invoice, gives the client a local review s
 
 Provider boundaries keep sponsor integrations isolated:
 
-- Privacy: MagicBlock/mock provider behind one private payment contract.
+- Privacy: MagicBlock devnet USDC signed payment rail or mock fallback behind one private payment contract.
 - Data: Dune SIM SVM balances or RPC/static fallback for redacted settlement analytics.
 - Identity: SNS opt-in `.sol` identity through the configured Solana/SNS RPC path when available.
 - AI: Local Invoice Agent over a local QVAC OpenAI-compatible runtime when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local review fallback.
@@ -46,16 +46,16 @@ Verified in this release:
 - Supabase-backed invoice creation and payment proof storage on the current Vercel deployment.
 - Dune SIM server adapter for redacted SVM balance analytics; the production route returns `source: "dune-sim"`.
 - SNS resolver path for opt-in `.sol` identity through the configured Solana/SNS RPC endpoint; fallback stays explicit when unsupported.
-- MagicBlock Private Payments browser-wallet signed devnet transaction submission.
-- Palm USD / PUSD official Solana SPL mint metadata verified from Palm USD developer docs.
+- MagicBlock Private Payments browser-wallet signed devnet USDC transaction submission.
+- Palm USD / PUSD official Solana SPL mint metadata verified from Palm USD developer docs for invoice denomination and utility.
 
 Not claimed as complete:
 
-- Completed live PUSD mainnet settlement until a real transaction signature is captured.
-- Production mainnet MagicBlock settlement; current evidence is devnet browser-wallet signing/submission.
-- Production-ready wallet auth, encryption key recovery, or onchain proof verification.
+- PUSD mainnet payment proof until a real PUSD transaction signature is captured.
+- MagicBlock mainnet settlement; current evidence is devnet browser-wallet signing/submission.
+- Production-ready wallet auth, encryption key recovery, recipient key wrapping, persistent cross-session decrypt, or onchain proof verification.
 
-Palm USD / PUSD is used as the invoice settlement denomination in the demo. Official Solana PUSD mint metadata is verified from Palm USD developer docs: `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`, SPL, 6 decimals. VeilSettle still does not claim completed live PUSD mainnet settlement until a real transaction signature is captured.
+Palm USD / PUSD is used as the invoice denomination in the demo. Official Solana PUSD mint metadata is verified from Palm USD developer docs: `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`, SPL, 6 decimals. The signed payment rail evidence is MagicBlock devnet USDC; VeilSettle does not claim PUSD mainnet payment proof until a real PUSD transaction signature is captured.
 
 ## Track Fit
 
@@ -65,8 +65,8 @@ Palm USD / PUSD is used as the invoice settlement denomination in the demo. Offi
 - Dune SIM: redacted SVM balance analytics adapter with production HTTP 200 smoke evidence.
 - SNS: opt-in identity resolver/fallback, never exposed on public receipt without opt-in.
 - Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
-- MagicBlock/privacy: signed/submitted devnet browser-wallet flow; no production mainnet settlement claim.
-- Palm USD: verified-mint PUSD invoice utility prototype; no completed live mainnet settlement claim.
+- MagicBlock/privacy: signed/submitted devnet USDC browser-wallet flow; no production mainnet settlement claim.
+- Palm USD: verified-mint PUSD invoice denomination and utility prototype; no PUSD mainnet payment proof claim.
 - GoldRush: optional only with live receipt/wallet enrichment evidence.
 - Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 
@@ -149,6 +149,8 @@ git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN
 
 Only commit empty variable names in `apps/web/.env.example`. Keep real Supabase keys, wallet files, private keys, sponsor API keys, and local planning notes in ignored local files or deployment secrets.
 
+Invoice encryption in this release is MVP/demo-session scoped. The app encrypts invoice blobs and separates public commitments from private invoice data, but it does not implement production key recovery, recipient key wrapping, wallet-authenticated access control, or persistent cross-session decrypt.
+
 See:
 
 - `docs/security/publication-checklist.md`
@@ -159,7 +161,6 @@ See:
 ## Submission Links
 
 - Deployed app: https://hackathon-frontier.vercel.app
-- Demo video: not yet published in repo.
 - GitHub repository: https://github.com/mih249/hackathon-frontier
-- Colosseum project: not yet published in repo.
-- Superteam submissions: not yet published in repo.
+
+Demo video and Colosseum submission links are provided through the Colosseum portal and are not tracked in this repository.

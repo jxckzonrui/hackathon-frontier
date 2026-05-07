@@ -37,7 +37,7 @@ describe("sponsor integration adapters", () => {
     expect(JSON.stringify(checks)).not.toContain(draft.amountMinor);
   });
 
-  it("prepares mock payments by default and Cloak references when enabled", async () => {
+  it("prepares mock payments by default and keeps Cloak planned-only when enabled", async () => {
     const { preparePrivatePayment } = await import("./privacy-payments");
     const request = {
       invoiceId: "invoice-1",
@@ -52,10 +52,9 @@ describe("sponsor integration adapters", () => {
     });
 
     vi.stubEnv("NEXT_PUBLIC_ENABLE_CLOAK", "true");
-    await expect(preparePrivatePayment(request)).resolves.toMatchObject({
-      provider: "cloak",
-      paymentProofReference: "cloak:invoice-1",
-    });
+    await expect(preparePrivatePayment(request)).rejects.toThrow(
+      "Cloak SDK settlement is not enabled in this release",
+    );
   });
 
   it("returns settlement events for the dashboard adapter", async () => {

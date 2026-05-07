@@ -18,7 +18,7 @@ Status meanings:
 | Dune SIM | Primary verified | Server-side Dune SIM SVM balances adapter for redacted settlement analytics. | Production `/api/analytics/settlements` smoke returned HTTP 200 with `source: "dune-sim"`; rerun before final submission. |
 | SNS | Primary conditional | Opt-in `.sol` identity resolver/fallback through the configured Solana/SNS RPC path. | Submit SNS only if `/api/identity/sns` smoke succeeds; otherwise document fallback without live resolver claim. |
 | MagicBlock Privacy | Primary verified on devnet | MagicBlock Private Payments browser-wallet signed devnet SPL transfer with public-safe signature evidence. | Devnet signature `4b6qjNPWff5sHzL9hUvAvWN4KLLJzi7G69NyTtLXLS9GfpmMvugf8UiGC5vRiCNu4GeM3fcsZZQKE8VRqryZ1zk6`; do not imply production mainnet settlement. |
-| Palm USD / PUSD | Conditional | Verified-mint PUSD invoice utility prototype for private business settlement on Solana. | Official Solana PUSD mint metadata is verified; submit without claiming completed live PUSD mainnet settlement unless transaction evidence is captured. |
+| Palm USD / PUSD | Conditional | Verified-mint PUSD invoice utility prototype for private business settlement on Solana. | Official Solana PUSD mint metadata is verified; submit without claiming PUSD mainnet payment proof unless transaction evidence is captured. |
 | RPC Fast | Conditional | Redacted Solana RPC health proof through `/api/status/rpc`. | Submit only if final deployed `SOLANA_RPC_URL` is confirmed as an RPC Fast endpoint and `getHealth=ok` evidence is captured. |
 | GoldRush | Optional | Receipt or wallet enrichment only if a live endpoint is added. | Needs `GOLDRUSH_API_KEY` and redacted endpoint evidence. |
 | Torque or theMiracle | Optional | Growth/campaign or user-benefit story only with credible live evidence or budget confirmation. | Needs `TORQUE_API_KEY` or a concrete theMiracle benefit-budget decision. |
@@ -26,7 +26,7 @@ Status meanings:
 ## Explicit Non-Claims
 
 - MagicBlock: signed/submitted devnet evidence exists; do not claim production mainnet settlement.
-- PUSD: official Solana SPL mint metadata is verified; do not claim completed live PUSD mainnet settlement without transaction evidence.
+- PUSD: official Solana SPL mint metadata is verified; do not claim PUSD mainnet payment proof without transaction evidence.
 - Supabase: live-backed only after migration/RLS verification.
 - Dune SIM: live-backed only after HTTP 200 smoke evidence; deployment-backed only after deployment env evidence.
 - SNS: live resolver only after `/api/identity/sns` evidence; otherwise fallback only.

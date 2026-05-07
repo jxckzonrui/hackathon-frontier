@@ -171,12 +171,8 @@ const cloakFlagPrivatePaymentProvider: PrivatePaymentProvider = {
       publicSafe: true,
     };
   },
-  async preparePayment(request) {
-    return {
-      provider: "cloak",
-      paymentProofReference: proofReference("cloak", request.invoiceId),
-      transactionSignature: "cloak-demo-signature",
-    };
+  async preparePayment() {
+    throw new Error("Cloak SDK settlement is not enabled in this release");
   },
   status() {
     return {

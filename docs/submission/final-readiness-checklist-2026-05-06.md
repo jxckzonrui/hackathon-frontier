@@ -62,8 +62,8 @@ These are intentionally not configured for the current production deployment:
 
 Do not claim these as completed:
 
-- production mainnet MagicBlock private payment settlement;
-- live PUSD settlement;
+- MagicBlock mainnet private payment settlement;
+- PUSD mainnet payment proof;
 - QVAC cloud/runtime-backed production review;
 - GoldRush/Torque/Zerion optional tracks;
 - production-grade wallet auth or production-grade cryptographic key management;

@@ -4,7 +4,7 @@
 
 VeilSettle uses PUSD as the core invoice settlement denomination for a privacy-first B2B invoice flow on Solana.
 
-This submission claims a verified-mint PUSD invoice utility prototype. It does not claim completed live PUSD mainnet settlement unless a real transaction signature is captured.
+This submission claims a verified-mint PUSD invoice utility prototype. It does not claim PUSD mainnet payment proof unless a real PUSD transaction signature is captured.
 
 ## Official Metadata
 
@@ -43,6 +43,6 @@ Allowed in submission:
 
 Not claimed in submission:
 
-- Completed live PUSD mainnet settlement.
+- PUSD mainnet payment proof.
 - Custody, redemption, or market liquidity through VeilSettle.
-- Production mainnet MagicBlock settlement.
+- MagicBlock mainnet settlement.
