@@ -7,6 +7,7 @@ import { optInSnsIdentityProvider } from "./identity/provider";
 import { getIntegrationProviderStatuses } from "./status";
 import {
   MAGICBLOCK_DEVNET_USDC_MINT,
+  OFFICIAL_SOLANA_PUSD_MINT,
   createMagicBlockPrivatePaymentProvider,
   getPrivatePaymentProvider,
 } from "./privacy/provider";
@@ -159,6 +160,33 @@ describe("integration provider contracts", () => {
       mint: MAGICBLOCK_DEVNET_USDC_MINT,
       amount: 1,
       cluster: "devnet",
+    });
+  });
+
+  it("uses official Solana PUSD mint metadata for configured PUSD preparation", async () => {
+    const fetcher = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          transactionBase64: "base64-transaction",
+          sendTo: "base",
+          requiredSigners: ["Client111111111111111111111111111111111111"],
+        }),
+    });
+    const provider = createMagicBlockPrivatePaymentProvider({ fetcher });
+
+    await provider.preparePayment({
+      invoiceId: "invoice-1",
+      senderWallet: "Client111111111111111111111111111111111111",
+      recipientWallet: "Agency111111111111111111111111111111111111",
+      amountMinor: "2500000000",
+      currency: "PUSD",
+    });
+
+    expect(JSON.parse(fetcher.mock.calls[0][1].body)).toMatchObject({
+      mint: OFFICIAL_SOLANA_PUSD_MINT,
+      amount: 2500000000,
+      visibility: "private",
     });
   });
 

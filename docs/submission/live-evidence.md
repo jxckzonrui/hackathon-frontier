@@ -28,7 +28,7 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 | Dune SIM | Server adapter uses the SVM/Solana balances endpoint with `chains=solana`; local key/wallet smoke returned HTTP 200; production `/api/analytics/settlements` returned HTTP 200 with `source: "dune-sim"`. | Production Dune SIM analytics evidence exists for redacted settlement analytics. |
 | SNS | Provider/API contract and tests exist; resolver uses the configured Solana/SNS RPC path when supported and falls back safely when unsupported. | Opt-in identity resolver/fallback; live claim requires `/api/identity/sns` smoke evidence. |
 | QVAC / Local Agent | `@qvac/sdk` and `@qvac/cli` are installed; local model smoke returned HTTP 200; Local Invoice Agent converts local review signals into approve/review/reject decisions. | Live local QVAC model evidence exists; app still keeps deterministic fallback when runtime is absent. |
-| PUSD | No official Solana SPL mint/liquidity source verified. | Demo denomination only. |
+| PUSD | Official Palm USD developer docs publish Solana mainnet SPL mint `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`, 6 decimals, mint authority locked. | Verified-mint PUSD invoice utility prototype; no completed live PUSD mainnet settlement claim. |
 | RPC Fast | Production `/api/status/rpc` returns redacted provider/health/evidence without exposing private endpoint URLs. | RPC Fast production proof exists: `provider: "rpc-fast"`, `healthy: true`, `claimable: true`, `evidence: "getHealth=ok"`. |
 | GoldRush | Env hook exists; live endpoint evidence pending. | Optional, not claimed. |
 | Torque or theMiracle | Env hook/story path only; evidence pending. | Optional, not claimed. |
@@ -120,10 +120,12 @@ GitHub URL: https://github.com/mih249/hackathon-frontier
 
 ## PUSD Evidence
 
-- Public source check on 2026-05-04 found Palm USD product pages, but no official Solana SPL mint/liquidity source suitable for hardcoding in the app.
-- Release decision: PUSD remains a demo invoice denomination.
-- Private payment preparation uses USDC by default until an official `MAGICBLOCK_PUSD_MINT` value is confirmed.
-- VeilSettle does not claim live PUSD settlement in this release.
+- Public source check on 2026-05-07 found Palm USD developer docs with official Solana PUSD metadata.
+- Official Solana PUSD mint: `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`.
+- Palm USD docs describe the Solana deployment as mainnet SPL, 6 decimals, with mint authority locked.
+- Palm USD public circulation API returned HTTP 200 on 2026-05-07 and included a SOLANA circulation row.
+- Release decision: PUSD is upgraded from demo-only denomination to verified-mint invoice utility prototype.
+- Private payment preparation can use PUSD when `MAGICBLOCK_PUSD_MINT` or the default metadata path is configured, but the release still does not claim completed live PUSD mainnet settlement until a real transaction signature is captured.
 
 ## Dune SIM Evidence
 

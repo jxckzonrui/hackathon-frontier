@@ -47,14 +47,15 @@ Verified in this release:
 - Dune SIM server adapter for redacted SVM balance analytics; the production route returns `source: "dune-sim"`.
 - SNS resolver path for opt-in `.sol` identity through the configured Solana/SNS RPC endpoint; fallback stays explicit when unsupported.
 - MagicBlock Private Payments browser-wallet signed devnet transaction submission.
+- Palm USD / PUSD official Solana SPL mint metadata verified from Palm USD developer docs.
 
 Not claimed as complete:
 
-- Live PUSD settlement until the official Solana mint/liquidity source is confirmed.
+- Completed live PUSD mainnet settlement until a real transaction signature is captured.
 - Production mainnet MagicBlock settlement; current evidence is devnet browser-wallet signing/submission.
 - Production-ready wallet auth, encryption key recovery, or onchain proof verification.
 
-Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle does not claim live PUSD settlement until the official Solana SPL mint and liquidity path are confirmed.
+Palm USD / PUSD is used as the invoice settlement denomination in the demo. Official Solana PUSD mint metadata is verified from Palm USD developer docs: `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`, SPL, 6 decimals. VeilSettle still does not claim completed live PUSD mainnet settlement until a real transaction signature is captured.
 
 ## Track Fit
 
@@ -65,7 +66,7 @@ Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle doe
 - SNS: opt-in identity resolver/fallback, never exposed on public receipt without opt-in.
 - Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
 - MagicBlock/privacy: signed/submitted devnet browser-wallet flow; no production mainnet settlement claim.
-- Palm USD: demo denomination only until official Solana mint/liquidity is confirmed.
+- Palm USD: verified-mint PUSD invoice utility prototype; no completed live mainnet settlement claim.
 - GoldRush: optional only with live receipt/wallet enrichment evidence.
 - Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 

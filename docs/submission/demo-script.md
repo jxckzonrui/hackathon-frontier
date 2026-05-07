@@ -6,7 +6,7 @@ Web3 agencies need stablecoin invoice settlement proof without exposing invoice 
 
 ## 0:25-1:10 Create Private Invoice
 
-Show the agency dashboard, open the new invoice flow, and create the protocol audit sprint invoice for `client.sol`. Explain that the demo invoice is PUSD-denominated, while live PUSD settlement is not claimed until the official Solana mint/liquidity path is confirmed.
+Show the agency dashboard, open the new invoice flow, and create the protocol audit sprint invoice for `client.sol`. Explain that PUSD is the invoice settlement denomination and that the official Solana PUSD mint metadata is verified from Palm USD developer docs. Be precise: this is a verified-mint PUSD invoice utility prototype, not a completed live PUSD mainnet settlement claim.
 
 ## 1:10-1:45 Local Review
 
@@ -14,7 +14,7 @@ Open the client review page and show either `QVAC local runtime active` or `QVAC
 
 ## 1:45-2:40 Private Payment Preparation
 
-Click `Prepare private payment`. Explain that payment preparation is gated by the Local Invoice Agent recommendation. The deployed stable demo may use the mock provider for a public-safe proof write, while the MagicBlock provider path signs and submits a devnet private SPL transfer through the browser wallet when MagicBlock env is configured. Claim MagicBlock only as signed/submitted devnet evidence, not production mainnet settlement.
+Click `Prepare private payment`. Explain that payment preparation is gated by the Local Invoice Agent recommendation. The deployed stable demo may use the mock provider for a public-safe proof write, while the MagicBlock provider path signs and submits a devnet private SPL transfer through the browser wallet when MagicBlock env is configured. PUSD preparation remains env/provider-based using the official mint metadata; claim MagicBlock only as signed/submitted devnet evidence, not production mainnet or completed live PUSD settlement.
 
 ## 2:40-3:25 Public Verification
 
@@ -26,4 +26,4 @@ Open the settlement dashboard and show Dune SIM-backed redacted analytics if the
 
 ## 4:10-4:45 Why It Matters
 
-Agencies, auditors, and service vendors can prove settlement without leaking commercial terms. The next production steps are signed wallet auth, verified onchain settlement proof, production key recovery, live Supabase verification, and confirmed stablecoin mint support.
+Agencies, auditors, and service vendors can prove settlement without leaking commercial terms. The next production steps are production wallet auth, completed live PUSD mainnet settlement proof, production key recovery, and deeper onchain proof verification.

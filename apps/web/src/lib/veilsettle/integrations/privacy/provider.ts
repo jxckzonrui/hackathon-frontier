@@ -1,5 +1,8 @@
 import type { StablecoinSymbol } from "../../types";
 import type { IntegrationProviderStatus } from "../status";
+import { OFFICIAL_SOLANA_PUSD_MINT } from "../stablecoins";
+
+export { OFFICIAL_SOLANA_PUSD_MINT } from "../stablecoins";
 
 type PrivatePaymentProviderId = "cloak" | "umbra" | "magicblock" | "mock";
 
@@ -59,6 +62,7 @@ type MagicBlockProviderOptions = {
 
 const defaultMagicBlockApiUrl = "https://payments.magicblock.app";
 const defaultMagicBlockMints: Partial<Record<StablecoinSymbol, string>> = {
+  PUSD: OFFICIAL_SOLANA_PUSD_MINT,
   USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   USDT: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkYkByTzW1C9S2da",
 };

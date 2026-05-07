@@ -3,6 +3,7 @@ import { PaymentSettlementActions } from "@/components/PaymentSettlementActions"
 import { createLocalInvoiceAgentReview } from "@/lib/veilsettle/integrations/ai/local-agent";
 import { localInvoiceReviewProvider } from "@/lib/veilsettle/integrations/ai/provider";
 import { getSnsIdentityProvider } from "@/lib/veilsettle/integrations/identity/provider";
+import { getStablecoinMetadata } from "@/lib/veilsettle/integrations/stablecoins";
 import {
   fetchPublicInvoiceRow,
   getSupabaseServerClient,
@@ -52,6 +53,7 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
     knownAttachmentHashes: [],
   });
   const agentReview = createLocalInvoiceAgentReview(review);
+  const pusdMetadata = getStablecoinMetadata("PUSD");
   const merchantIdentity = await getSnsIdentityProvider().displayIdentity({
     name: demoReviewDraft.clientDisplay,
     wallet: demoReviewDraft.clientWallet,
@@ -113,6 +115,32 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
           )}
 
           <div className="mt-6 border-t border-slate-100 pt-5">
+            <div className="mb-5 border border-emerald-100 bg-emerald-50 p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-950">
+                    PUSD settlement asset
+                  </p>
+                  <p className="mt-1 text-sm text-emerald-800">
+                    Official Palm USD Solana SPL mint metadata verified for invoice utility.
+                  </p>
+                </div>
+                <span className="rounded-md bg-white px-2 py-1 text-xs font-medium text-emerald-800">
+                  {pusdMetadata.decimals} decimals
+                </span>
+              </div>
+              <dl className="mt-3 grid gap-2 text-xs md:grid-cols-2">
+                <div>
+                  <dt className="text-emerald-700">Network</dt>
+                  <dd className="font-medium text-emerald-950">{pusdMetadata.network}</dd>
+                </div>
+                <div>
+                  <dt className="text-emerald-700">Mint</dt>
+                  <dd className="break-all font-mono text-emerald-950">{pusdMetadata.mint}</dd>
+                </div>
+              </dl>
+            </div>
+
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm font-semibold text-slate-900">QVAC local checks</p>
               <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700">
