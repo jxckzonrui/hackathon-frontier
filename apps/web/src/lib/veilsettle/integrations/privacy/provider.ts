@@ -1,5 +1,8 @@
 import type { StablecoinSymbol } from "../../types";
 import type { IntegrationProviderStatus } from "../status";
+import { OFFICIAL_SOLANA_PUSD_MINT } from "../stablecoins";
+
+export { OFFICIAL_SOLANA_PUSD_MINT } from "../stablecoins";
 
 type PrivatePaymentProviderId = "cloak" | "umbra" | "magicblock" | "mock";
 
@@ -59,9 +62,12 @@ type MagicBlockProviderOptions = {
 
 const defaultMagicBlockApiUrl = "https://payments.magicblock.app";
 const defaultMagicBlockMints: Partial<Record<StablecoinSymbol, string>> = {
+  PUSD: OFFICIAL_SOLANA_PUSD_MINT,
   USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
   USDT: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkYkByTzW1C9S2da",
 };
+
+export const MAGICBLOCK_DEVNET_USDC_MINT = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU";
 
 function proofReference(provider: PrivatePaymentProviderId, invoiceId: string) {
   return `${provider}:${invoiceId}`;
@@ -98,6 +104,32 @@ function amountMinorToNumber(amountMinor: string): number {
   }
 
   return amount;
+}
+
+function omitUndefinedMints(
+  mintByCurrency: Partial<Record<StablecoinSymbol, string>> = {},
+): Partial<Record<StablecoinSymbol, string>> {
+  return Object.fromEntries(
+    Object.entries(mintByCurrency).filter((entry): entry is [StablecoinSymbol, string] =>
+      Boolean(entry[1]),
+    ),
+  ) as Partial<Record<StablecoinSymbol, string>>;
+}
+
+function resolveMagicBlockMint(
+  request: PrivatePaymentRequest,
+  mintByCurrency: Partial<Record<StablecoinSymbol, string>>,
+  configuredMintByCurrency: Partial<Record<StablecoinSymbol, string>>,
+): string | undefined {
+  if (request.mint) {
+    return request.mint;
+  }
+
+  if (request.currency === "USDC" && request.cluster === "devnet") {
+    return configuredMintByCurrency.USDC ?? MAGICBLOCK_DEVNET_USDC_MINT;
+  }
+
+  return mintByCurrency[request.currency];
 }
 
 const mockPrivatePaymentProvider: PrivatePaymentProvider = {
@@ -139,12 +171,8 @@ const cloakFlagPrivatePaymentProvider: PrivatePaymentProvider = {
       publicSafe: true,
     };
   },
-  async preparePayment(request) {
-    return {
-      provider: "cloak",
-      paymentProofReference: proofReference("cloak", request.invoiceId),
-      transactionSignature: "cloak-demo-signature",
-    };
+  async preparePayment() {
+    throw new Error("Cloak SDK settlement is not enabled in this release");
   },
   status() {
     return {
@@ -163,9 +191,10 @@ export function createMagicBlockPrivatePaymentProvider(
 ): PrivatePaymentProvider {
   const apiUrl = (options.apiUrl ?? defaultMagicBlockApiUrl).replace(/\/+$/, "");
   const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis);
+  const configuredMintByCurrency = omitUndefinedMints(options.mintByCurrency);
   const mintByCurrency = {
     ...defaultMagicBlockMints,
-    ...options.mintByCurrency,
+    ...configuredMintByCurrency,
   };
 
   return {
@@ -179,7 +208,7 @@ export function createMagicBlockPrivatePaymentProvider(
       };
     },
     async preparePayment(request) {
-      const mint = request.mint ?? mintByCurrency[request.currency];
+      const mint = resolveMagicBlockMint(request, mintByCurrency, configuredMintByCurrency);
 
       if (!mint) {
         throw new Error(`Missing MagicBlock SPL mint for ${request.currency}`);
@@ -240,6 +269,7 @@ export function getPrivatePaymentProvider(): PrivatePaymentProvider {
     return createMagicBlockPrivatePaymentProvider({
       apiUrl: process.env.MAGICBLOCK_PAYMENTS_API_URL,
       mintByCurrency: {
+        USDC: process.env.MAGICBLOCK_USDC_MINT,
         PUSD: process.env.MAGICBLOCK_PUSD_MINT,
       },
     });

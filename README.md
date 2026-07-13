@@ -10,8 +10,8 @@ It lets an agency create an encrypted invoice, gives the client a local review s
 
 1. Agency opens the dashboard and creates a protocol audit sprint invoice.
 2. Private invoice details stay in the authorized flow.
-3. Client reviews local QVAC-compatible checks.
-4. The app prepares a private payment through the configured provider route.
+3. Client reviews local QVAC-compatible checks and the Local Invoice Agent decision.
+4. The app prepares a private payment through the configured provider route only after local review.
 5. Public verification shows settlement status, hashes, and proof reference without amount, memo, line items, attachments, or client context.
 
 ## Architecture
@@ -24,45 +24,53 @@ It lets an agency create an encrypted invoice, gives the client a local review s
 
 Provider boundaries keep sponsor integrations isolated:
 
-- Privacy: MagicBlock/mock provider behind one private payment contract.
+- Privacy: MagicBlock devnet USDC signed payment rail or mock fallback behind one private payment contract.
 - Data: Dune SIM SVM balances or RPC/static fallback for redacted settlement analytics.
-- Identity: SNS provider/API contract for opt-in `.sol` identity.
-- AI: local QVAC OpenAI-compatible runtime adapter when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local invoice review fallback.
+- Identity: SNS opt-in `.sol` identity through the configured Solana/SNS RPC path when available.
+- AI: Local Invoice Agent over a local QVAC OpenAI-compatible runtime when `QVAC_BASE_URL` is localhost, or a QVAC-compatible deterministic local review fallback.
 
 ## Current Release Status
 
-VeilSettle is submitted as a hackathon MVP for privacy-preserving stablecoin invoice settlement.
+VeilSettle is release-positioned as a hackathon MVP for privacy-preserving stablecoin invoice settlement.
+
+Current public surfaces:
+
+- Deployed app: https://hackathon-frontier.vercel.app
+- GitHub repository: https://github.com/mih249/hackathon-frontier
 
 Verified in this release:
 
 - Encrypted invoice creation and public/private receipt separation.
 - Local invoice review with either a localhost-only QVAC runtime adapter or a QVAC-compatible deterministic fallback.
-- Dune SIM server adapter for redacted SVM balance analytics.
-- SNS provider/API contract for opt-in `.sol` identity; live resolver evidence is pending.
-- MagicBlock Private Payments unsigned transaction preparation.
+- Local Invoice Agent that turns local review signals into approve/review/reject decisions before payment preparation.
+- Supabase-backed invoice creation and payment proof storage on the current Vercel deployment.
+- Dune SIM server adapter for redacted SVM balance analytics; the production route returns `source: "dune-sim"`.
+- SNS resolver path for opt-in `.sol` identity through the configured Solana/SNS RPC endpoint; fallback stays explicit when unsupported.
+- MagicBlock Private Payments browser-wallet signed devnet USDC transaction submission.
+- Palm USD / PUSD official Solana SPL mint metadata verified from Palm USD developer docs for invoice denomination and utility.
 
 Not claimed as complete:
 
-- Live PUSD settlement until the official Solana mint/liquidity source is confirmed.
-- Completed MagicBlock private payments until wallet signing/submission is wired.
-- Production-ready wallet auth, encryption key recovery, or onchain proof verification.
+- PUSD mainnet payment proof until a real PUSD transaction signature is captured.
+- MagicBlock mainnet settlement; current evidence is devnet browser-wallet signing/submission.
+- Production-ready wallet auth, encryption key recovery, recipient key wrapping, persistent cross-session decrypt, or onchain proof verification.
 
-Palm USD / PUSD is shown as the invoice denomination in the demo. VeilSettle does not claim live PUSD settlement until the official Solana SPL mint and liquidity path are confirmed.
+Palm USD / PUSD is used as the invoice denomination in the demo. Official Solana PUSD mint metadata is verified from Palm USD developer docs: `CZzgUBvxaMLwMhVSLgqJn3npmxoTo6nzMNQPAnwtHF3s`, SPL, 6 decimals. The signed payment rail evidence is MagicBlock devnet USDC; VeilSettle does not claim PUSD mainnet payment proof until a real PUSD transaction signature is captured.
 
 ## Track Fit
 
 - Main Colosseum Frontier: core product demo.
 - 100xDevs: usable Solana/Web3 MVP.
 - Adevar Labs: security statement, threat model, public/private receipt separation, audit posture.
-- Dune SIM: redacted SVM balance analytics adapter with local HTTP 200 smoke evidence; deployment evidence pending.
-- SNS: opt-in identity provider/API contract, safe live resolver evidence pending.
+- Dune SIM: redacted SVM balance analytics adapter with production HTTP 200 smoke evidence.
+- SNS: opt-in identity resolver/fallback, never exposed on public receipt without opt-in.
 - Tether QVAC: localhost-only runtime adapter if configured; otherwise QVAC-compatible local fallback.
-- MagicBlock/privacy: unsigned private payment preparation; signing/submission deferred.
-- Palm USD: demo denomination only until official Solana mint/liquidity is confirmed.
+- MagicBlock/privacy: signed/submitted devnet USDC browser-wallet flow; no production mainnet settlement claim.
+- Palm USD: verified-mint PUSD invoice denomination and utility prototype; no PUSD mainnet payment proof claim.
 - GoldRush: optional only with live receipt/wallet enrichment evidence.
 - Torque or theMiracle: optional only with credible campaign or user-benefit evidence.
 
-RPC Fast remains evidence-dependent until a release endpoint is configured.
+RPC Fast remains evidence-dependent unless the submitted environment is proven to use the sponsor endpoint; `/api/status/rpc` returns redacted health evidence without exposing private endpoint URLs.
 
 ## Setup
 
@@ -117,7 +125,7 @@ corepack.cmd pnpm --filter @veilsettle/web qvac:serve:windows
 
 On Windows, `qvac:serve:windows` runs QVAC from a short local runtime directory to avoid pnpm path-length issues in native Bare addons. When the local QVAC model is serving, set `QVAC_BASE_URL=http://127.0.0.1:11434/v1` and `QVAC_MODEL=qvac-local-invoice-review` in local env or deployment secrets. Do not set a cloud URL; non-local QVAC URLs are rejected.
 
-The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`, but live project migration is not claimed until the project migration and RLS checks are verified.
+The submitted demo is safe to run in local fallback mode when Supabase credentials are not configured. The Supabase schema is included in `supabase/migrations/0001_veilsettle.sql`; current release evidence documents the live schema/RLS check and deployed create/payment proof smoke.
 
 ## Verification
 
@@ -141,6 +149,8 @@ git grep -n -I -E "(PRIVATE_KEY|SERVICE_ROLE|SECRET|PASSWORD|TOKEN|API_KEY|BEGIN
 
 Only commit empty variable names in `apps/web/.env.example`. Keep real Supabase keys, wallet files, private keys, sponsor API keys, and local planning notes in ignored local files or deployment secrets.
 
+Invoice encryption in this release is MVP/demo-session scoped. The app encrypts invoice blobs and separates public commitments from private invoice data, but it does not implement production key recovery, recipient key wrapping, wallet-authenticated access control, or persistent cross-session decrypt.
+
 See:
 
 - `docs/security/publication-checklist.md`
@@ -150,8 +160,7 @@ See:
 
 ## Submission Links
 
-- Deployed app: not yet published in repo.
-- Demo video: not yet published in repo.
-- GitHub repository: not yet published in repo.
-- Colosseum project: not yet published in repo.
-- Superteam submissions: not yet published in repo.
+- Deployed app: https://hackathon-frontier.vercel.app
+- GitHub repository: https://github.com/mih249/hackathon-frontier
+
+Demo video and Colosseum submission links are provided through the Colosseum portal and are not tracked in this repository.

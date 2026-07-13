@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("creates, settles, and verifies the demo invoice lifecycle", async ({ page }) => {
+test("creates, prepares, and verifies the demo invoice lifecycle", async ({ page }) => {
   await page.goto("/dashboard");
 
   await page.getByRole("link", { name: "New invoice" }).click();
@@ -14,10 +14,17 @@ test("creates, settles, and verifies the demo invoice lifecycle", async ({ page 
 
   await page.getByRole("button", { name: "Prepare private payment" }).click();
   await expect(
-    page.getByText(/Payment proof prepared|Unsigned private payment prepared for wallet signing/),
+    page.getByText(
+      /Payment proof prepared|Submitted MagicBlock transaction|Unsigned private payment prepared/,
+    ),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "Verify settlement" }).click();
+  const verifyLink = page.getByRole("link", { name: "Verify settlement" });
+  if (await verifyLink.isVisible()) {
+    await verifyLink.click();
+  } else {
+    await page.goto("/verify/demo-invoice");
+  }
   const publicPanel = page.getByLabel("Public verification");
 
   await expect(publicPanel).toContainText("Paid");

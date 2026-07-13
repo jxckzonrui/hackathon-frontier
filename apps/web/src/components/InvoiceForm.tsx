@@ -58,24 +58,45 @@ export function InvoiceForm() {
   }
 
   return (
-    <section className="border border-slate-200 bg-white">
-      <div className="border-b border-slate-200 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-md bg-emerald-50 text-emerald-700">
+    <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl shadow-emerald-950/5">
+      <div className="grid gap-5 border-b border-slate-200 bg-gradient-to-br from-emerald-50 via-white to-violet-50 p-6 md:grid-cols-[1fr_120px]">
+        <div>
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-md bg-emerald-50 text-emerald-700">
             <FileLock2 aria-hidden="true" className="size-5" />
-          </span>
-          <div>
-            <h2 className="text-lg font-semibold text-slate-950">Protocol audit sprint</h2>
-            <p className="text-sm text-slate-600">2,500.00 PUSD demo denomination</p>
-            <p className="text-xs text-slate-500">Due 2026-05-08</p>
+            </span>
+            <div>
+              <h2 className="text-2xl font-semibold text-slate-950">Protocol audit sprint</h2>
+              <p className="mt-1 text-sm text-slate-600">Due 2026-05-08</p>
+            </div>
           </div>
+          <p className="mt-5 text-5xl font-semibold tracking-normal md:text-6xl">
+            2,500.00 <span className="text-emerald-700">PUSD</span>
+          </p>
+          <p className="sr-only">2,500.00 PUSD demo denomination</p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <span className="rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Encrypted terms
+            </span>
+            <span className="rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-semibold text-emerald-700">
+              PUSD verified
+            </span>
+            <span className="rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Public leakage 0
+            </span>
+          </div>
+        </div>
+        <div className="rounded-lg bg-[#07110f] p-4 text-white">
+          <p className="text-xs text-white/60">Settlement asset</p>
+          <p className="mt-5 text-2xl font-semibold">PUSD</p>
+          <p className="mt-2 text-xs leading-5 text-white/70">Solana SPL - 6 decimals</p>
         </div>
       </div>
 
       <div className="grid gap-0 md:grid-cols-[1fr_280px]">
         <div className="divide-y divide-slate-100">
           {demoInvoice.lineItems.map((item) => (
-            <div className="flex items-center justify-between px-5 py-4" key={item.label}>
+            <div className="flex items-center justify-between px-6 py-5" key={item.label}>
               <span className="text-sm font-medium text-slate-800">{item.label}</span>
               <span className="font-mono text-sm text-slate-600">
                 {(Number(item.amountMinor) / 1_000_000).toLocaleString("en-US", {
@@ -85,7 +106,7 @@ export function InvoiceForm() {
               </span>
             </div>
           ))}
-          <div className="px-5 py-4">
+          <div className="px-6 py-5">
             <p className="text-xs font-semibold uppercase tracking-normal text-slate-500">
               Private memo
             </p>
@@ -109,7 +130,7 @@ export function InvoiceForm() {
           </div>
 
           <button
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-slate-950 px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-400"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-md bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
             disabled={isCreating}
             onClick={createInvoice}
             type="button"

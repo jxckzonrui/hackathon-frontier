@@ -14,5 +14,14 @@ describe("settlement analytics API route", () => {
       events: expect.any(Array),
     });
     expect(JSON.stringify(payload)).not.toContain("demo-invoice");
+    expect(JSON.stringify(payload)).not.toMatch(/amount|memo|lineItems|attachmentHash|clientWallet|clientDisplay/i);
+    for (const event of payload.events) {
+      expect(Object.keys(event).sort()).toEqual([
+        "invoiceHash",
+        "observedAt",
+        "paymentProofReference",
+        "status",
+      ]);
+    }
   });
 });

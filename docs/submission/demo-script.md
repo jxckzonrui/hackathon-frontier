@@ -6,15 +6,15 @@ Web3 agencies need stablecoin invoice settlement proof without exposing invoice 
 
 ## 0:25-1:10 Create Private Invoice
 
-Show the agency dashboard, open the new invoice flow, and create the protocol audit sprint invoice for `client.sol`. Explain that the demo invoice is PUSD-denominated, while live PUSD settlement is not claimed until the official Solana mint/liquidity path is confirmed.
+Show the agency dashboard, open the new invoice flow, and create the protocol audit sprint invoice for `client.sol`. Explain that PUSD is the invoice denomination and that the official Solana PUSD mint metadata is verified from Palm USD developer docs. Be precise: this is a verified-mint PUSD invoice utility prototype, not PUSD mainnet payment proof.
 
 ## 1:10-1:45 Local Review
 
-Open the client review page and show either `QVAC local runtime active` or `QVAC-compatible local fallback`: risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note. Say that private invoice content is never sent to cloud review APIs; `QVAC_BASE_URL` is accepted only for localhost/loopback runtimes. If a real QVAC model is not serving on the local OpenAI-compatible `/v1/chat/completions` endpoint, describe this as fallback mode.
+Open the client review page and show either `QVAC local runtime active` or `QVAC-compatible local fallback`: risk score, duplicate signal, vendor consistency, suspicious wording, and privacy note. Then show the Local Invoice Agent panel: approve/review/reject decision, findings, recommended action, and privacy notice. Say that private invoice content is never sent to cloud review APIs; `QVAC_BASE_URL` is accepted only for localhost/loopback runtimes. If a real QVAC model is not serving on the local OpenAI-compatible `/v1/chat/completions` endpoint, describe this as fallback mode.
 
 ## 1:45-2:40 Private Payment Preparation
 
-Click `Prepare private payment`. Explain that the app calls the server-side private payment provider route. For MagicBlock, this release prepares an unsigned private SPL transfer for wallet signing; completed signing/submission is not claimed unless separate live evidence is added.
+Click `Prepare private payment`. Explain that payment preparation is gated by the Local Invoice Agent recommendation. The deployed stable demo may use the mock provider for a public-safe proof write, while the MagicBlock provider path signs and submits a devnet USDC private SPL transfer through the browser wallet when MagicBlock env is configured. PUSD preparation remains env/provider-based using the official mint metadata; claim MagicBlock only as signed/submitted devnet USDC evidence, not mainnet settlement or PUSD payment proof.
 
 ## 2:40-3:25 Public Verification
 
@@ -22,8 +22,8 @@ Open the split verification page. Show that the authorized party can see the amo
 
 ## 3:25-4:10 Integrations
 
-Open the settlement dashboard and show Dune SIM-backed or static-fallback redacted analytics. Show the integration status panel. Mention SNS as an opt-in identity provider/API contract; only claim live `.sol` resolution if safe resolver evidence has been added. Mention RPC Fast, GoldRush, Torque, and theMiracle only if their evidence is present in `live-evidence.md`.
+Open the settlement dashboard and show Dune SIM-backed redacted analytics if the deployed route reports `source: "dune-sim"`; otherwise call it a fallback. Show the integration status panel. Mention SNS as an opt-in identity resolver/fallback and only claim live `.sol` resolution when `/api/identity/sns` evidence succeeds. Mention RPC Fast only if `/api/status/rpc` reports `provider: "rpc-fast"` with `getHealth=ok`. Do not mention GoldRush, Torque, or theMiracle unless their evidence is present in `live-evidence.md`.
 
 ## 4:10-4:45 Why It Matters
 
-Agencies, auditors, and service vendors can prove settlement without leaking commercial terms. The next production steps are signed wallet auth, verified onchain settlement proof, production key recovery, live Supabase verification, and confirmed stablecoin mint support.
+Agencies, auditors, and service vendors can prove settlement without leaking commercial terms. The next production steps are production wallet auth, PUSD mainnet payment proof, production key recovery, and deeper onchain proof verification.

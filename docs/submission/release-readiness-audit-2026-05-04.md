@@ -144,7 +144,7 @@ Submit the main project as:
 
 Avoid claiming:
 
-- "live PUSD settlement" until official mint/liquidity is confirmed;
+- "PUSD payment proof" until official mint/liquidity and transaction evidence are confirmed;
 - "completed MagicBlock private payments" until signing/submission works;
 - "production-ready encryption/auth" until wallet-encrypted keys and signed wallet auth are added;
 - "live Supabase-backed demo" until migration/env/schema are verified;
